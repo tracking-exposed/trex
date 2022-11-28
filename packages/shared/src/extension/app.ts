@@ -8,6 +8,10 @@ import {
   serverLookup,
   settingsLookup,
 } from './background/sendMessage';
+import {
+  // getFilter,
+  WebRequestHandler,
+} from './background/webRequest/filterRequest';
 import db from './db';
 import * as dom from './dom';
 import { registerHandlers } from './handlers/index';
@@ -35,6 +39,7 @@ export interface SelectorObserverHandler extends BaseObserverHandler {
   match: {
     type: 'selector';
     selector: string;
+    observe?: boolean;
   };
 }
 
@@ -44,6 +49,7 @@ export interface SelectorWithParentsObserverHandler
     type: 'selector-with-parents';
     selector: string;
     parents: number;
+    observe?: boolean;
   };
 }
 
@@ -74,6 +80,9 @@ export interface BootOpts {
     payload: ServerLookup['payload']
   ) => UserSettings;
   observe: SetupObserverOpts;
+  webRequest?: {
+    handlers: WebRequestHandler;
+  };
   hub: {
     hub: Hub<any>;
     onRegister: (h: Hub<HubEvent>, config: UserSettings) => void;
@@ -97,39 +106,77 @@ let oldHref: string;
  * given callbacks for selectors
  */
 function setupObserver(
-  { handlers, platformMatch, onLocationChange }: SetupObserverOpts,
+  { handlers: _handlers, platformMatch, onLocationChange }: SetupObserverOpts,
   config: UserSettings
 ): MutationObserver {
-  const handlersList = Object.keys(handlers);
+  // group handlers by type and `ObserverHandler.observe?`
+  // to subscribe them to proper DOM and location changes
+  const handlers = Object.entries(_handlers).reduce<{
+    selectors: Array<
+      [string, SelectorObserverHandler | SelectorWithParentsObserverHandler]
+    >;
+    observableSelectors: Array<
+      [string, SelectorObserverHandler | SelectorWithParentsObserverHandler]
+    >;
+    routes: Array<[string, RouteObserverHandler]>;
+  }>(
+    (acc, [h, handler]) => {
+      const { match } = handler;
+      if (match.type === 'selector' || match.type === 'selector-with-parents') {
+        if (match.observe) {
+          acc.observableSelectors.push([
+            h,
+            handler as SelectorWithParentsObserverHandler,
+          ]);
+        } else {
+          acc.selectors.push([
+            h,
+            handler as SelectorWithParentsObserverHandler,
+          ]);
+        }
+      } else if (handler.match.type === 'route') {
+        acc.routes.push([h, handler as RouteObserverHandler]);
+      }
+      return acc;
+    },
+    { selectors: [], observableSelectors: [], routes: [] }
+  );
+
   // register selector and 'selector-with-parents' handlers
-  handlersList.forEach((h) => {
-    const { handle, ...handler } = handlers[h];
-
-    if (
-      handler.match.type === 'selector' ||
-      handler.match.type === 'selector-with-parents'
-    ) {
-      dom.on(handler.match.selector, (node) =>
-        handle(node, handler, h, {
-          ...config,
-          href: window.location.toString(),
-        } as any)
-      );
-    }
+  handlers.selectors.forEach(([h, { handle, ...handler }]) => {
+    appLog.debug('handler listen for mutation %O', handler);
+    dom.on(handler.match.selector, (node) =>
+      handle(node, handler, h, {
+        ...config,
+        href: window.location.toString(),
+      } as any)
+    );
   });
-
-  // appLog.debug('handlers installed %O', handlers);
 
   /* and monitor href changes to randomize a new accessId */
   const body = window.document.querySelector('body');
 
   const observer = new MutationObserver(
     _.debounce(
-      (mutations) => {
-        // appLog.debug('mutation (%s) %O', mutation.type, mutation.target);
+      (mutations: MutationRecord[]) => {
+        appLog.info('mutations %O', mutations);
 
         if (window?.document) {
           if (platformMatch.test(window.location.href)) {
+            // always trigger handlers with `observe` equals to `true`
+            handlers.observableSelectors.forEach(
+              ([h, { handle, ...handler }]) => {
+                // appLog.debug('Handler for mutation %s', h);
+                mutations.forEach((r) => {
+                  // appLog.debug('Mutation target %s', (r.target as Element).id);
+                  if (`#${(r.target as any).id}` === handler.match.selector) {
+                    // appLog.debug('Target match %O', (r.target as any).id);
+                    handle(r.target as any, handler, h, config);
+                  }
+                });
+              }
+            );
+
             if (window.location.href !== oldHref) {
               const newHref = window.location.href;
 
@@ -143,32 +190,21 @@ function setupObserver(
               oldHref = newHref;
             }
 
-            // always call the route handler
-            const routeHandlerKey = handlersList.find((h) => {
-              const handler = handlers[h];
-
-              if (handler.match.type === 'route') {
-                // appLog.debug(
-                //   'Matching route %O',
-                //   handler.match,
-                //   window.location.pathname
-                // );
-                return window.location.pathname.match(handler.match.location);
-              }
-              return false;
+            // look for handler for the current path
+            const routeHandler = handlers.routes.find(([h, handler]) => {
+              return window.location.pathname.match(handler.match.location);
             });
 
-            if (routeHandlerKey) {
-              const { handle, ...routeHandlerOpts } = handlers[
-                routeHandlerKey
-              ] as RouteObserverHandler;
+            // invoke the route handler, if any
+            if (routeHandler?.[0]) {
+              const { handle, ...routeHandlerOpts } = routeHandler[1];
               appLog.debug(
                 'Matched route handler key %s: %O',
-                routeHandlerKey,
+                routeHandler[0],
                 routeHandlerOpts
               );
 
-              handle(window.document.body, routeHandlerOpts, routeHandlerKey, {
+              handle(window.document.body, routeHandlerOpts, routeHandler[0], {
                 ...config,
                 href: window.location.toString(),
               } as any);
@@ -182,6 +218,7 @@ function setupObserver(
   );
 
   const observerConfig = {
+    // attributes: true,
     childList: true,
     subtree: true,
   };
@@ -342,8 +379,23 @@ export async function boot(opts: BootOpts): Promise<App> {
   // can report the problem and we can handle it.
   // initializeEmergencyButton();
 
-  // because the URL has been for sure reloaded, be sure to also
+  // because the URL has been for sure reloaded, be sure to
+  // clear cache too
   clearCache();
+
+  // if (opts.webRequest && bo.webRequest) {
+  //   bo.webRequest.onBeforeRequest.addListener(
+  //     (d) => {
+  //       Object.entries(opts.webRequest?.handlers ?? []).forEach(
+  //         ([key, handler]) => {
+  //           getFilter(d, handler);
+  //         }
+  //       );
+  //     },
+  //     { urls: ['https://*/*'], types: ['main_frame', 'xmlhttprequest'] },
+  //     ['blocking']
+  //   );
+  // }
 
   // send the configuration to the server to register the extension
   const handshakeResponse = await serverHandshakeP(config);
