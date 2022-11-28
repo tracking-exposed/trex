@@ -1,3 +1,25 @@
+## [2.8.0](https://github.com/tracking-exposed/trex/compare/v2.7.1...v2.8.0) (2022-11-28)
+
+### Features
+
+- **shared:** error "snackbar" component ([#798](https://github.com/tracking-exposed/trex/issues/798)) ([48fb8df](https://github.com/tracking-exposed/trex/commit/48fb8df95c1fefa8d52b1e25613ada0b376a8ad1))
+- **tk:** SIGI_STATE and API requests collection (v2.8.0) ([#811](https://github.com/tracking-exposed/trex/issues/811)) ([7c715b3](https://github.com/tracking-exposed/trex/commit/7c715b3eaaf6c3fcf8104fe0fab18e75323bd3e1)), closes [#814](https://github.com/tracking-exposed/trex/issues/814) [#808](https://github.com/tracking-exposed/trex/issues/808) [#813](https://github.com/tracking-exposed/trex/issues/813)
+
+### Fixes
+
+- ensure pm2 process gets stopped even when test fails ([8c1a67e](https://github.com/tracking-exposed/trex/commit/8c1a67efc4685bfb890338c4bfc3953a970c31b8))
+- review mongodb indexes, added 'nature.type', renamed collections, removed email related code ([#795](https://github.com/tracking-exposed/trex/issues/795)) ([988e81c](https://github.com/tracking-exposed/trex/commit/988e81cc8a4d5270e056b7a294b5148f34987149))
+- **shared:** better error definition ([#779](https://github.com/tracking-exposed/trex/issues/779)) ([eaa7a17](https://github.com/tracking-exposed/trex/commit/eaa7a174afe65687bddf72f7d8579c3a242ce903))
+- **storybook:** font-face and theme ([#794](https://github.com/tracking-exposed/trex/issues/794)) ([b428739](https://github.com/tracking-exposed/trex/commit/b42873936735678b1a7c728bc50c39e416c4e558))
+- **tk:backend:** load configuration before importing parser configuration ([5e2023c](https://github.com/tracking-exposed/trex/commit/5e2023ccf0e608384c62bff718216c68defcddb8))
+- **tk:backend:** register module alias for parser process ([ce98528](https://github.com/tracking-exposed/trex/commit/ce98528fc2f82a89f335c368793ad1e2fb9ac5c8))
+- **tk:shared:** defined metadata filters based on nature type ([ba80c94](https://github.com/tracking-exposed/trex/commit/ba80c94a731a2d5d8d04ff930078fa668033e6cb))
+- **yt:shared:** defined metadata filters based on nature type ([2f2cd79](https://github.com/tracking-exposed/trex/commit/2f2cd794126def6c4b3077263fe3f17f060cf11b))
+
+- **deps:** bump loader-utils from 1.4.1 to 1.4.2 ([0c3396b](https://github.com/tracking-exposed/trex/commit/0c3396bff5a4fd9976c3d032ddba683283fb3a7b))
+- **tk:backend:** added missing dep for parserv: axios and jsdom ([0741ba4](https://github.com/tracking-exposed/trex/commit/0741ba4e4298b3acbe5aebc30ef1ff4085b13cde))
+- **workspace:** fix docker-compose build ([833d7c5](https://github.com/tracking-exposed/trex/commit/833d7c5b31f75701f52721596f2bbf28437e3813))
+
 ## [2.7.1](https://github.com/tracking-exposed/trex/compare/v2.7.0...v2.7.1) (2022-11-16)
 
 - **deps:** bump loader-utils from 1.4.0 to 1.4.1 ([d24ec82](https://github.com/tracking-exposed/trex/commit/d24ec82a2e69a451695d10681bd65f337a5f0d28))
