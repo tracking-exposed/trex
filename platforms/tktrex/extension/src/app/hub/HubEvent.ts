@@ -51,6 +51,7 @@ export interface SearchEvent extends HubEventBase {
   payload: {
     html: string;
     href: string;
+    feedId: string;
   };
 }
 
@@ -59,6 +60,27 @@ export interface SuggestedEvent extends HubEventBase {
   payload: {
     html: string;
     href: string;
+    feedId: string;
+  };
+}
+
+export interface SigiStateEvent extends HubEventBase {
+  type: 'SigiState';
+  payload: {
+    state: any;
+    href: string;
+    feedId: string;
+    feedCounter: number;
+  };
+}
+
+export interface APIRequestEvent extends HubEventBase {
+  type: 'APIRequestEvent';
+  payload: {
+    payload: string;
+    href: string;
+    feedId: string;
+    feedCounter: number;
   };
 }
 
@@ -68,4 +90,6 @@ export type TKHubEvent =
   | NativeVideoEvent
   | SearchEvent
   | ProfileEvent
-  | SuggestedEvent;
+  | SuggestedEvent
+  | SigiStateEvent
+  | APIRequestEvent;

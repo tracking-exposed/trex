@@ -14,9 +14,8 @@ import { tiktokDomainRegExp } from '@tktrex/parser/v2/constant';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as app from '../src/app/app';
-import * as handlers from '../src/app/handlers';
 import api, { getHeadersForDataDonation } from '../src/background/api';
-import tkHub from '../src/handlers/hub';
+import tkHub, * as handlers from '../src/app/hub';
 
 const profileMatcher = app.tkHandlers.profile;
 const videoMatcher = app.tkHandlers.video;
@@ -135,9 +134,12 @@ describe('TK App - profile ', () => {
 
       // video handler should be invoked as the url includes `watch`
       expect(handleProfileSpy).toHaveBeenCalledTimes(1);
-      expect(handleVideoSpy).toHaveBeenCalledTimes(1);
-      // one for the contribution 'profile' event and one for 'sync' event
-      expect(hubDispatchSpy).toHaveBeenCalledTimes(2);
+      expect(handleVideoSpy).toHaveBeenCalledTimes(2);
+      // at this point the dispatch should have been called for
+      // - sigiState
+      // - profile
+      // - sync
+      expect(hubDispatchSpy).toHaveBeenCalledTimes(3);
 
       const { href, ...config } = appContext.config;
       expect(axiosMock.request).toHaveBeenNthCalledWith(1, {
@@ -153,10 +155,11 @@ describe('TK App - profile ', () => {
 
       expect(axiosMock.request).toHaveBeenNthCalledWith(2, {
         url: '/v2/events',
-        data: [expect.any(Object)],
+        data: [expect.any(Object), expect.any(Object)],
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
+          'Content-Length': expect.any(Number),
           'X-Tktrex-Build': process.env.BUILD_DATE,
           'X-Tktrex-NonAuthCookieId': researchTag,
           'X-Tktrex-PublicKey': process.env.PUBLIC_KEY,

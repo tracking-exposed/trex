@@ -22,7 +22,7 @@ export const GetTests = (profileName?: string): Tests => {
 
   const profile = profileName ?? `profile-test-${uuid()}`;
 
-  const basePath = path.resolve(__dirname, '../');
+  const basePath = process.env.BASE_PATH ?? path.resolve(__dirname, '../');
   const profileDir = getProfileDataDir(basePath, profile);
   const ytExtensionDir = path.resolve(basePath, '../yttrex/extension/build');
   const tkExtensionDir = path.resolve(basePath, '../tktrex/extension/build');

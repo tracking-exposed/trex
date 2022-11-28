@@ -40,12 +40,14 @@ export const makeApp = async (
 
   /* This is the API meant to receive data donation */
   apiRouter.post('/v2/events', iowrapper('processEvents'));
-  apiRouter.post('/v2/apiEvents', iowrapper('processAPIEvents'));
   apiRouter.post('/v2/handshake', iowrapper('handshake'));
 
   apiRouter.get('/v2/recent', iowrapper('getRecent'));
 
-  apiRouter.get('/v2/statistics/:name/:unit/:amount', iowrapper('getStatistics'));
+  apiRouter.get(
+    '/v2/statistics/:name/:unit/:amount',
+    iowrapper('getStatistics')
+  );
 
   /* debug API */
   apiRouter.get('/v2/debug/html/:htmlId', iowrapper('unitById'));
@@ -69,8 +71,14 @@ export const makeApp = async (
   apiRouter.post('/v2/directives', iowrapper('postDirective'));
   apiRouter.get('/v2/directives/:experimentId', iowrapper('fetchDirective'));
   apiRouter.post('/v2/handshake', iowrapper('experimentChannel3'));
-  apiRouter.delete('/v2/experiment/:testTime', iowrapper('concludeExperiment3'));
-  apiRouter.get('/v2/experiment/:experimentId/json', iowrapper('experimentJSON'));
+  apiRouter.delete(
+    '/v2/experiment/:testTime',
+    iowrapper('concludeExperiment3')
+  );
+  apiRouter.get(
+    '/v2/experiment/:experimentId/json',
+    iowrapper('experimentJSON')
+  );
   // TODO unify the two API below and the one above
   apiRouter.get(
     '/v2/experiment/:experimentId/csv/:type',
@@ -93,7 +101,10 @@ export const makeApp = async (
     '/v[1-2]/personal/:publicKey/:what/json',
     iowrapper('getPersonal')
   );
-  apiRouter.get('/v2/personal/:publicKey/:what/csv', iowrapper('getPersonalCSV'));
+  apiRouter.get(
+    '/v2/personal/:publicKey/:what/csv',
+    iowrapper('getPersonalCSV')
+  );
 
   /* implemented for DMI winter school, supported in Taboule, trimming in progress */
   apiRouter.get('/v2/public/searches', iowrapper('getSearches'));
@@ -103,6 +114,9 @@ export const makeApp = async (
   );
   apiRouter.get('/v2/public/queries/list', iowrapper('getQueryList'));
   apiRouter.get('/v2/metadata', iowrapper('listMetadata'));
+
+  apiRouter.get('/v2/apiRequests', iowrapper('getAPIRequests'));
+  apiRouter.get('/v2/sigiStates', iowrapper('getSigiStates'));
 
   /* --------------- end of documented APIs -------------------- */
 
@@ -119,7 +133,7 @@ export const makeApp = async (
     );
   });
 
-  router.use('/api', apiRouter)
+  router.use('/api', apiRouter);
 
   app.use(router);
 

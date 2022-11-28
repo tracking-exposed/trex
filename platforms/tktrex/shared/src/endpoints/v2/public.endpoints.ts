@@ -1,8 +1,8 @@
 import { DocumentedEndpoint } from '@shared/endpoints';
+import { ListOutput } from '@shared/models/http/Output';
 import { SearchQuery } from '@shared/models/http/SearchQuery';
 import * as t from 'io-ts';
 import * as apiModel from '../../models';
-import { GetSearchByQueryInputParams } from '../../models/http/Search';
 
 export const Handshake = DocumentedEndpoint({
   title: 'Handshake',
@@ -21,10 +21,22 @@ const AddEvents = DocumentedEndpoint({
   getPath: () => '/v2/events',
   Input: {
     Headers: apiModel.http.Headers.TKHeaders,
-    Body: t.array(apiModel.Events.ContributionEvent),
+    Body: apiModel.http.Body.AddEventsBody,
   },
   Output: t.any,
   title: 'Add contribution events',
+  description: '',
+  tags: ['events'],
+});
+
+const GETAPIEvents = DocumentedEndpoint({
+  Method: 'GET',
+  getPath: () => '/v2/apiRequests',
+  Input: {
+    Query: apiModel.http.Query.ListAPIRequestQuery,
+  },
+  Output: ListOutput(apiModel.APIRequest.APIRequest, 'APIRequestList'),
+  title: 'GET API Request List',
   description: '',
   tags: ['events'],
 });
@@ -42,7 +54,7 @@ const GetSearchByQuery = DocumentedEndpoint({
   Method: 'GET',
   getPath: ({ query, format }) => `/v2/public/query/${query}/${format}`,
   Input: {
-    Params: GetSearchByQueryInputParams,
+    Params: apiModel.http.Query.Search.GetSearchByQueryInputParams,
     Query: SearchQuery,
   },
   Output: apiModel.Public.GetSearchByQueryOutput,
@@ -62,6 +74,7 @@ const GetQueryList = DocumentedEndpoint({
 
 export default {
   AddEvents,
+  GETAPIEvents,
   Handshake,
   GetSearches,
   GetSearchByQuery,

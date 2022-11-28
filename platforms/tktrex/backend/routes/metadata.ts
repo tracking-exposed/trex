@@ -13,8 +13,8 @@ import { throwTE } from '@shared/utils/task.utils';
 import { AppError } from '@shared/errors/AppError';
 import moment from 'moment';
 import CSV from '../lib/CSV';
-import { ListMetadataOutput } from '@tktrex/shared/models/http/metadata/output/ListMetadata.output';
-import { ListMetadataQuery } from '@tktrex/shared/models/http/metadata/query/ListMetadata.query';
+import { ListMetadataOutput } from '@tktrex/shared/models/http/output/ListMetadata.output';
+import { ListMetadataQuery } from '@tktrex/shared/models/http/query/ListMetadata.query';
 
 const debug = createDebug('routes:public');
 

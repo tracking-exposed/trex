@@ -5,6 +5,14 @@ import { APIHandler, listHandler, recommendedListHandler } from './handlers';
 
 const iLog = log.extend('intercept');
 
+/**
+ * This module patches at runtime the XHR module
+ * to apply our filters on the API requests sent to the
+ * platform server.
+ *
+ * @namespace TrExXMLHttpPRequest
+ *
+ */
 interface TrExXMLHttpPRequest extends XMLHttpRequest {
   _method: string;
   _startTime: Date;
@@ -81,6 +89,12 @@ export const getOrCreateInterceptorContainer = (): HTMLDivElement => {
   return interceptorContainer;
 };
 
+/**
+ * These are the handlers we're going to use to filter
+ * the relevant requests
+ */
+const interceptHandlers = [listHandler, recommendedListHandler];
+
 export default (function(xhr) {
   const XHR = XMLHttpRequest.prototype;
 
@@ -118,22 +132,19 @@ export default (function(xhr) {
       ); */
 
       // get array of data to convert to DOM nodes
-      const caughtData = [listHandler, recommendedListHandler].reduce<Datum[]>(
-        (acc, h) => {
-          // check the current request match api handler
-          const urlMatch =
-            h.urls.some((u) => (this as any)._url.includes(u)) &&
-            (this as any)._method === h.method;
+      const caughtData = interceptHandlers.reduce<Datum[]>((acc, h) => {
+        // check the current request match api handler
+        const urlMatch =
+          h.urls.some((u) => (this as any)._url.includes(u)) &&
+          (this as any)._method === h.method;
 
-          if (urlMatch) {
-            return acc.concat(
-              parseData(this as TrExXMLHttpPRequest, { api: h, postData }),
-            );
-          }
-          return acc;
-        },
-        [],
-      );
+        if (urlMatch) {
+          return acc.concat(
+            parseData(this as TrExXMLHttpPRequest, { api: h, postData }),
+          );
+        }
+        return acc;
+      }, []);
 
       if (caughtData.length) iLog.debug('Nodes with results %O', caughtData);
 
