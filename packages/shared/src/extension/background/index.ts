@@ -32,10 +32,10 @@ export const MessageHandler =
       return true;
     }
 
-    if (request.type === 'apiSync') {
-      void sync.handleAPISyncMessage(opts)(request, sender, sendResponse);
-      return true;
-    }
+    // if (request.type === 'apiSync') {
+    //   void sync.handleAPISyncMessage(opts)(request, sender, sendResponse);
+    //   return true;
+    // }
 
     if (request.type === 'ReloadExtension') {
       void reloadExtension.load();

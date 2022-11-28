@@ -16,6 +16,7 @@ import { HTML } from '@tktrex/shared/models/http/HTML';
 import { TKHeadersLC } from '@tktrex/shared/models/http/TKHeaders';
 import { SigiStateType } from '@tktrex/shared/models/sigiState/SigiState';
 import { getNatureByHref } from '@tktrex/shared/parser/parsers/nature';
+import { parseISO } from 'date-fns';
 import D from 'debug';
 import * as express from 'express';
 import * as A from 'fp-ts/Array';
@@ -200,6 +201,9 @@ async function processEvents(req: express.Request): Promise<{
   // decode the headers - it throws when fails
   const headers = throwEitherError(decodeHeaders(_.get(req, 'headers')));
 
+  // console.log(req.body);
+  // console.log(JSON.stringify(req.body));
+
   if (!utils.verifyRequestSignature(req)) {
     debug('Verification fail (signature %s)', headers.signature);
     return {
@@ -228,7 +232,7 @@ async function processEvents(req: express.Request): Promise<{
   const { htmls, apiRequests, sigiStates } = events.reduce((acc, body, i) => {
     const event: any = {
       href: body.href,
-      clientTime: body.clientTime,
+      clientTime: parseISO(body.clientTime),
       researchTag: headers.researchTag,
       publicKey: headers.publicKey,
       savingTime: new Date(),

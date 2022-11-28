@@ -7,6 +7,7 @@ export const SigiStateDB = t.type(
     ...SigiStateContributionEvent.type.props,
     _id: t.string,
     id: t.string,
+    clientTime: date,
     savingTime: date,
     publicKey: t.string,
   },

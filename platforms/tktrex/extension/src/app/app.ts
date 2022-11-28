@@ -8,8 +8,9 @@ import log from '@shared/extension/logger';
 import UserSettings from '@shared/extension/models/UserSettings';
 import { HTMLSize } from '@shared/extension/utils/HTMLSize.utils';
 import _ from 'lodash';
-import tkHub from '../handlers/hub';
-import { INTERCEPTED_ITEM_CLASS } from '../interceptor/constants';
+import tkHub from './hub';
+import { INTERCEPTOR_CONTAINER_ID } from '../interceptor/constants';
+import { addAppUI } from './components';
 
 export const appLog = log.extend('app');
 const searchSize = HTMLSize();
@@ -24,14 +25,19 @@ export function tkTrexActions(remoteInfo: unknown): void {
   appLog.info('initialize watchers, remoteInfo available:', remoteInfo);
 
   // initialize ui
+
+  const apiInterceptorUI = document.createElement('div');
+  addAppUI(apiInterceptorUI);
+
   // initializeEmergencyButton();
 
   // the mutation observer seems to ignore container new children,
   // so an interval take place here
-  setInterval(
-    () => _.debounce(handleInterceptedData, 5000, { trailing: true }),
-    5000,
-  );
+  // setInterval(
+  //   () => _.debounce(handleInterceptedData, 5000, { trailing: true }),
+  //   5000
+  // );
+
   flush();
 }
 
@@ -145,25 +151,36 @@ const handleVideoRoute = (
  * the event to the hub and remove the node from the container
  */
 
-const handleInterceptedData = (): void => {
-  const itemNodes = document.body.querySelectorAll(
-    (tkHandlers.apiInterceptor.match as any).selector,
-  );
+const handleInterceptedData = (element: Node): void => {
+  const itemNodes = Array.from(element.childNodes);
 
+  appLog.info('Intercepted data %d', itemNodes.length);
   if (itemNodes.length === 0) {
+    appLog.debug('No intercepted requests, skipping...');
     return;
   }
 
   appLog.debug('Intercepted %d items', itemNodes.length);
 
   itemNodes.forEach((ch, i) => {
-    // hidLog.info('Child el %O', childEl);
-    const html = ch.innerHTML;
+    const payload = ch.textContent ?? 'not-parsable';
+    const json = JSON.parse(payload);
+    if (json.url === '/v1/list') {
+      appLog.info(
+        'Request intercepted %O',
+        (json.events ?? []).map((e: any) => e.event),
+      );
+    }
+
     try {
-      const data = JSON.parse(html);
       tkHub.dispatch({
-        type: 'APIEvent',
-        payload: data,
+        type: 'APIRequestEvent',
+        payload: {
+          payload,
+          feedId,
+          feedCounter,
+          href: window.location.href,
+        },
       });
     } catch (e) {
       appLog.error('Error %O', e);
@@ -174,10 +191,34 @@ const handleInterceptedData = (): void => {
   });
 };
 
+let lastHandleSigi: any;
 // experiment in progress;
 const handleSigi = _.debounce((element: Node): void => {
   // eslint-disable-next-line no-console
-  console.log('Sigi', element);
+  const script = element.textContent;
+  if (!script) {
+    log.error('No SIGI_STATE found');
+    return;
+  }
+
+  const data = JSON.parse(script);
+  if (JSON.stringify(data) === JSON.stringify(lastHandleSigi)) {
+    log.info('Sigi has not changed, skipping update...');
+    return;
+  }
+
+  log.info('Sigi state %O', data);
+
+  tkHub.dispatch({
+    type: 'SigiState',
+    payload: {
+      state: JSON.stringify(data),
+      href: window.location.href,
+      feedId,
+      feedCounter,
+    },
+  });
+  lastHandleSigi = data;
 });
 
 const handleSearch = _.debounce((element: Node): void => {
@@ -236,6 +277,7 @@ const handleSuggested = _.debounce((elem: Node): void => {
     payload: {
       html: parent.outerHTML,
       href: window.location.href,
+      feedId,
     },
   });
 }, 300);
@@ -491,17 +533,27 @@ export const tkHandlers: { [key: string]: ObserverHandler } = {
     handle: () => undefined,
   },
   search: searchHandler,
+  /**
+   * Handle the intercepted API requests sent to tiktok.com.
+   *
+   * It uses the {@link TrExXMLHttpPRequest} to intercept requests.
+   */
   apiInterceptor: {
     match: {
       type: 'selector',
-      selector: `div.${INTERCEPTED_ITEM_CLASS}`,
+      selector: `#${INTERCEPTOR_CONTAINER_ID}`,
+      observe: true,
     },
     handle: handleInterceptedData,
   },
+  /**
+   * Handle the SIGI_STATE returned in the html body
+   * on first render
+   */
   sigiExperiment: {
     match: {
       type: 'selector',
-      selector: '#sigi-persisted-data',
+      selector: '#SIGI_STATE',
     },
     handle: handleSigi,
   },
