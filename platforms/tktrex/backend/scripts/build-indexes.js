@@ -19,6 +19,8 @@ ret = db.metadata.createIndex({ savingTime: -1 });
 checkret('metadata savingTime', ret);
 ret = db.metadata.createIndex({ type: -1 });
 checkret('metadata type', ret);
+ret = db.metadata.createIndex({ 'nature.type': -1 });
+checkret('metadata nature.type', ret);
 ret = db.metadata.createIndex({ experimentId: 1 });
 checkret('metadata experimentId', ret);
 
