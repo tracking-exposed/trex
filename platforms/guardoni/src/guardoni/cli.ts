@@ -58,7 +58,7 @@ export type GuardoniCommandConfig =
     }
   | {
       run: 'download';
-      experiment: NonEmptyString;
+      experimentId: NonEmptyString;
       out: string;
       opts: DownloadExperimentOpts;
     }
@@ -203,7 +203,7 @@ export const GetGuardoniCLI: GetGuardoniCLI = (
             case 'download':
             default:
               return g.downloadExperiment(
-                command.experiment,
+                command.experimentId,
                 command.out,
                 command.opts
               );
