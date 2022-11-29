@@ -13,7 +13,7 @@ function validateEmail(email) {
 }
 */
 
-async function registerEmail2(req) {
+async function registerEmail(req) {
   /* emails are not currently used, and the code used in yttrex it is simpler than the one in tk.
    * the piece of code should be merged in `shared` and ported in TS.
    * Eventually, registering email should be done only after having understood which kind of
@@ -44,6 +44,6 @@ async function listEmails(req) {
 }
 
 module.exports = {
-  registerEmail: registerEmail2,
+  registerEmail,
   listEmails,
 };

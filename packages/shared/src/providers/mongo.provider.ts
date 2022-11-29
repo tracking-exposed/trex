@@ -11,6 +11,7 @@ import {
   UpdateResult,
   Filter,
   WithId,
+  InsertManyResult,
 } from 'mongodb';
 import nconf from 'nconf';
 
@@ -68,12 +69,12 @@ async function writeOne(
   return mongoc.db().collection(cName).insertOne(doc);
 }
 
-async function insertMany(
+async function insertMany<T extends Document>(
   mongoc: MongoClient,
   cName: string,
-  docs: any[],
+  docs: Document[],
   options?: any
-): Promise<void> {
+): Promise<InsertManyResult<T>> {
   if (!options) options = {};
   return mongoc.db().collection(cName).insertMany(docs, options);
 }
