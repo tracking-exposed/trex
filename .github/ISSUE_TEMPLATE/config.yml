@@ -1,0 +1,9 @@
+
+blank_issues_enabled: true
+contact_links:
+    - name: 📃 Documentation
+      url: https://docs.tracking.exposed
+      about: Please report documentation issues in the React Native website repository.
+    - name: 🚀 Discussions and Proposals
+      url: https://github.com/tracking-exposed/trex/discussions
+      about: Discuss the future of TrEx in the community's discussions and proposals section.
