@@ -1,20 +1,18 @@
-import { toAPIError } from '@shared/errors/APIError';
 import { decodeOrThrowRequest } from '@shared/endpoints/helper';
-import endpoints from '@tktrex/shared/endpoints/v2/metadata.endpoints';
-import createDebug from 'debug';
-import * as A from 'fp-ts/Array';
-import { pipe } from 'fp-ts/lib/function';
-import * as TE from 'fp-ts/TaskEither';
-import * as E from 'fp-ts/lib/Either';
-import { toTKMetadata } from '../io/metadata.io';
-import _ from 'lodash';
-import * as automo from '../lib/automo';
-import { throwTE } from '@shared/utils/task.utils';
+import { toAPIError } from '@shared/errors/APIError';
 import { AppError } from '@shared/errors/AppError';
-import moment from 'moment';
-import CSV from '../lib/CSV';
+import { throwTE } from '@shared/utils/task.utils';
+import endpoints from '@tktrex/shared/endpoints/v2/metadata.endpoints';
 import { ListMetadataOutput } from '@tktrex/shared/models/http/output/ListMetadata.output';
 import { ListMetadataQuery } from '@tktrex/shared/models/http/query/ListMetadata.query';
+import createDebug from 'debug';
+import { pipe } from 'fp-ts/lib/function';
+import * as TE from 'fp-ts/TaskEither';
+import _ from 'lodash';
+import moment from 'moment';
+import { toTKMetadata } from '../io/metadata.io';
+import * as automo from '../lib/automo';
+import CSV from '../lib/CSV';
 
 const debug = createDebug('routes:public');
 
@@ -95,14 +93,15 @@ const listMetadata = async (req: any): Promise<ListMetadataResponse> => {
         }),
       toAPIError
     ),
-    TE.chain(({ totals, data }) => {
+    /**
+     * Disable the validation of the output for the moment
+     */
+    TE.map(({ totals, data }) => {
       debug('Metadata by %O, %d evidences', filter, _.size(data));
-      return pipe(
-        data.map(toTKMetadata),
-        A.sequence(E.Applicative),
-        E.map((d) => ({ data: d, totals })),
-        TE.fromEither
-      );
+      return {
+        totals,
+        data: data.map(toTKMetadata),
+      };
     }),
     TE.chain((metadata): TE.TaskEither<AppError, ListMetadataResponse> => {
       if (format === 'csv') {
@@ -129,7 +128,7 @@ const listMetadata = async (req: any): Promise<ListMetadataResponse> => {
         });
       }
 
-      return TE.right({ json: metadata });
+      return TE.right({ json: metadata as any });
     }),
     throwTE
   );

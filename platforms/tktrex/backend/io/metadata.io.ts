@@ -8,7 +8,7 @@ import {
   NativeMetadata,
   ProfileMetadata,
   SearchMetadata,
-  TKMetadata,
+  TKMetadata
 } from '@tktrex/shared/models/metadata';
 import { TKMetadataBase as MetadataBase } from '@tktrex/shared/models/metadata/MetadataBase';
 import {
@@ -18,7 +18,7 @@ import {
   HashtagType,
   NativeType,
   ProfileType,
-  SearchType,
+  SearchType
 } from '@tktrex/shared/models/Nature';
 import * as E from 'fp-ts/Either';
 import { pipe } from 'fp-ts/function';
@@ -29,7 +29,7 @@ import {
   NativeMetadataDB,
   ProfileMetadataDB,
   SearchMetadataDB,
-  TKMetadataDB,
+  TKMetadataDB
 } from '../models/metadata';
 
 type SpecificM<M> = Omit<M, keyof Metadata | '_id' | 'publicKey'>;
@@ -156,7 +156,7 @@ export const toTKMetadata = ({
   experimentId,
   researchTag,
   ...m
-}: TKMetadataDB): E.Either<APIError, TKMetadata> => {
+}: TKMetadataDB): MetadataBase => {
   // common meta definition
   const meta: MetadataBase = {
     id: id.substring(0, 10),
@@ -170,44 +170,45 @@ export const toTKMetadata = ({
     experimentId: experimentId ?? undefined,
   };
 
+  // we cheat the compiler by setting `m` type to `any` for the switch;
+  const mm: any = m;
+
+  // based on the metadata nature type we extract
+  // the metadata values by a proper mapping function
+  switch (m.nature.type) {
+    case SearchType.value: {
+      return toSearchMetadata(mm, meta);
+    }
+    case ForYouType.value: {
+      return toForYouMetadata(mm, meta);
+    }
+    case FollowingType.value: {
+      return toFollowingMetadata(mm, meta);
+    }
+    case CreatorType.value:
+    case ProfileType.value: {
+      return toProfileMetadata(mm, meta);
+    }
+    case HashtagType.value: {
+      return toHashtagMetadata(mm, meta);
+    }
+
+    case NativeType.value: {
+      return toTKNativeMetadata(mm, meta);
+    }
+  }
+};
+
+export const decodeTKMetadata = (
+  d: TKMetadataDB
+): E.Either<APIError, TKMetadata> => {
   return pipe(
     // metadata mapping can fail, so we wrap it in a `E.tryCatch` and
     // use `toAppError` to convert any possible error to `AppError`
-    E.tryCatch(() => {
-      // we cheat the compiler by setting `m` type to `any` for the switch;
-      const mm: any = m;
-
-      // based on the metadata nature type we extract
-      // the metadata values by a proper mapping function
-      switch (m.nature.type) {
-        case SearchType.value: {
-          return toSearchMetadata(mm, meta);
-        }
-        case ForYouType.value: {
-          return toForYouMetadata(mm, meta);
-        }
-        case FollowingType.value: {
-          return toFollowingMetadata(mm, meta);
-        }
-        case CreatorType.value:
-        case ProfileType.value: {
-          return toProfileMetadata(mm, meta);
-        }
-        case HashtagType.value: {
-          return toHashtagMetadata(mm, meta);
-        }
-
-        case NativeType.value: {
-          return toTKNativeMetadata(mm, meta);
-        }
-      }
-    }, toAPIError),
-    // once we shaped the object based on its nature
-    // we decode it using the `TKMetadata` codec
-    // to be sure we're sending out only the defined fields
-    E.chain((e) =>
+    E.tryCatch(() => toTKMetadata(d), toAPIError),
+    E.chain((d) =>
       pipe(
-        TKMetadata.decode(e),
+        TKMetadata.decode(d),
         // in case of error we convert it to a `ValidationError` (`AppError`)
         E.mapLeft((err) => toValidationError(TKMetadata.name, err))
       )
