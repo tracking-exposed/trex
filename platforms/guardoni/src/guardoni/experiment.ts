@@ -382,6 +382,10 @@ export const walkPaginatedRequest =
 
       return pipe(
         apiReqFn({ skip, amount }),
+        TE.mapLeft((e) => ({
+          ...e,
+          message: `Failed with skip(${skip}) and amount(${amount}): ${e.message}`,
+        })),
         TE.chain((r) => {
           // logger.debug('Response: %o', r);
           const total = getTotal(r);
@@ -414,6 +418,8 @@ export const downloadExperiment =
     out: string,
     opts: DownloadExperimentOpts
   ): TE.TaskEither<AppError, GuardoniSuccessOutput> => {
+    ctx.logger.debug('Download experiment %s', experimentId);
+
     const tkDownloads = sequenceS(TE.ApplicativePar)({
       metadata: walkPaginatedRequest(ctx.logger)(
         (q) =>
