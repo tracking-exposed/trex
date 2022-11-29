@@ -66,7 +66,7 @@ export const makeApp = async (
 
   apiRouter.get('/v2/guardoni/list', iowrapper('getAllExperiments'));
 
-  apiRouter.get('/api/v2/directives/public', iowrapper('getPublicDirectives'));
+  apiRouter.get('/v2/directives/public', iowrapper('getPublicDirectives'));
 
   apiRouter.post('/v2/directives', iowrapper('postDirective'));
   apiRouter.get('/v2/directives/:experimentId', iowrapper('fetchDirective'));
