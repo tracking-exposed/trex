@@ -44,7 +44,7 @@
     "jsdom": "^16.7.0",
     "module-alias": "^2.2.2",
     "moment": "^2.29.4",
-    "mongodb": "^4.3.1",
+    "mongodb": "^4.12.1",
     "nacl-signature": "^1.0.0",
     "nconf": "^0.11.3",
     "node-fetch": "^2.6.7",
