@@ -249,7 +249,7 @@ const handleSearch = _.debounce((element: Node): void => {
   const contentHTML = contentNode?.innerHTML;
   if (!contentHTML) return;
 
-  const hasNewElements = searchSize.check(contentHTML);
+  const hasNewElements = searchSize.hasNewContent(contentHTML);
   if (!hasNewElements) return;
 
   tkHub.dispatch({

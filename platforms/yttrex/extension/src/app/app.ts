@@ -300,7 +300,7 @@ export const handleHomeRoute = (
     return;
   }
 
-  if (!homeSize.check(sendableNode.outerHTML)) {
+  if (!homeSize.hasNewContent(sendableNode.outerHTML)) {
     ytLogger.debug('Page did not change much, returning...');
     return;
   }
@@ -348,7 +348,7 @@ export const handleSearchRoute = (
 
   // check is a valid "search" nature
   if (hasVideosInBody(document)) {
-    if (!searchSize.check(sendableNode.outerHTML)) {
+    if (!searchSize.hasNewContent(sendableNode.outerHTML)) {
       ytLogger.debug('Page did not change much, returning...');
       return;
     }
@@ -398,7 +398,7 @@ export const handleWatchRoute = (
 
   // check is a valid "video" nature
   if (getVideoTitle(document) && mineAuthorInfo(document)) {
-    if (!videoSize.check(sendableNode.outerHTML)) {
+    if (!videoSize.hasNewContent(sendableNode.outerHTML)) {
       ytLogger.debug('Page did not change much, returning...');
       return;
     }
