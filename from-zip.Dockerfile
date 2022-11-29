@@ -1,5 +1,5 @@
 
-FROM alpine:3.5 as unzip
+FROM node:16.14-alpine as unzip
 
 WORKDIR /app
 
@@ -16,6 +16,7 @@ WORKDIR /app
 COPY --from=unzip /app ./
 
 RUN yarn install
-RUN yarn why canvas
+RUN yarn shared build
+# RUN yarn taboule build
 RUN yarn yt:ext dist
 RUN yarn tk:ext dist
