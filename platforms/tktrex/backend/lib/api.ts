@@ -62,7 +62,7 @@ const apiList = {
   getPublicDirectives: directivesRoutes.getPublic,
   getPersonalByExperimentId: personalRoutes.getPersonalByExperimentId,
   /* and specificly for the email, opt-in, and who wants to be get updated */
-  registerEmail2: emailsRoutes.registerEmail2,
+  registerEmail2: emailsRoutes.registerEmail,
   listEmails: emailsRoutes.listEmails,
 };
 
