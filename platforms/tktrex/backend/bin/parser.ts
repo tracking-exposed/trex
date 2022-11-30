@@ -99,7 +99,8 @@ const run = async (): Promise<void> => {
           const entryNature = e.html.nature.type ?? 'failed';
           const fixtureFolderPath = path.resolve(
             process.cwd(),
-            'parsers/__tests__/fixtures'
+            'parsers/__tests__/fixtures',
+            entryNature
           );
 
           // ensure fixtures folder path exists
@@ -109,7 +110,6 @@ const run = async (): Promise<void> => {
 
           const fixturePath = path.resolve(
             fixtureFolderPath,
-            entryNature,
             `${e.html.id}.json`
           );
 
