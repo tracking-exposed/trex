@@ -97,9 +97,20 @@ const run = async (): Promise<void> => {
         ...parserConfig,
         errorReporter: (e: LeafSource) => {
           const entryNature = e.html.nature.type ?? 'failed';
+
+          const fixtureFolderPath = path.resolve(
+            process.cwd(),
+            '__tests__/fixtures/htmls',
+            entryNature
+          );
+
+          // ensure fixtures folder path exists
+          if (!fs.existsSync(fixtureFolderPath)) {
+            fs.mkdirSync(fixtureFolderPath, { recursive: true });
+          }
+
           const fixturePath = path.resolve(
-            path.resolve(process.cwd(), '__tests__/fixtures/htmls'),
-            entryNature,
+            fixtureFolderPath,
             `${e.html.id}.json`
           );
 

@@ -99,17 +99,17 @@ const run = async (): Promise<void> => {
 
           const fixtureFolderPath = path.resolve(
             process.cwd(),
-            '__tests__/fixtures/htmls'
+            '__tests__/fixtures/htmls',
+            entryNature
           );
 
           // ensure fixtures folder path exists
           if (!fs.existsSync(fixtureFolderPath)) {
-            fs.mkdirSync(fixtureFolderPath);
+            fs.mkdirSync(fixtureFolderPath, { recursive: true });
           }
 
           const fixturePath = path.resolve(
             fixtureFolderPath,
-            entryNature,
             `${e.html.id}.json`
           );
 
