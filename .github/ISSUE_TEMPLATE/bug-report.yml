@@ -14,6 +14,13 @@ body:
     validations:
       required: true
   - type: input
+    id: details
+    attributes:
+      label: Details
+      description: Often scraping and data processing fails because you might use a language that we do not support. If the issue is in content collection, please specify the langue of your browser and, if possible, which content is failing to collect. 
+    validations:
+      required: false
+  - type: input
     id: version
     attributes:
       label: Version
