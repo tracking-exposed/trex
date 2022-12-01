@@ -1,0 +1,46 @@
+name: 🐛 Bug Report
+description: Report a reproducible bug or regression in TrEx.
+labels: ["Needs: bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please provide all the information requested. Issues that do not follow this format are likely to stall.
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Please provide a clear and concise description of what the bug is. Include screenshots if needed. Test using the [latest TrEx release](https://github.com/tracking-exposed/trex/releases/latest) to make sure your issue has not already been fixed.
+    validations:
+      required: true
+  - type: input
+    id: details
+    attributes:
+      label: Details
+      description: Often scraping and data processing fails because you might use a language that we do not support. If the issue is in content collection, please specify the langue of your browser and, if possible, which content is failing to collect. 
+    validations:
+      required: false
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: What trex version does this appear on?
+      placeholder: ex. 2.7.0
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Provide a detailed list of steps that reproduce the issue.
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: Code example, screenshot, or link to a repository
+      description: |
+        Please provide a link to a repository on GitHub, or provide a minimal code example that reproduces the problem.
+        You may provide a screenshot of the application if you think it is relevant to your bug report.
+    validations:
+      required: false
