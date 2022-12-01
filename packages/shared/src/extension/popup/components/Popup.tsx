@@ -10,6 +10,8 @@ import Settings, { SettingsProps } from './Settings';
 import UserSettings from '../../models/UserSettings';
 import * as React from 'react';
 import moment from 'moment';
+import { Hub } from '../../hub';
+import HubEvent from '../../models/HubEvent';
 
 const styles = {
   width: '400px',
@@ -21,6 +23,7 @@ export interface PopupProps {
   logo: string;
   getLinks: (opts: { publicKey: string }) => DashboardLink[];
   settings: Pick<SettingsProps, 'enabled'>;
+  hub: Hub<HubEvent>;
 }
 
 type PopupState =
@@ -39,6 +42,7 @@ type PopupState =
 
 let localLookupInterval: any;
 const Popup: React.FC<PopupProps> = ({
+  hub,
   platform,
   platformURL,
   settings,
@@ -50,13 +54,14 @@ const Popup: React.FC<PopupProps> = ({
   });
 
   const handleLocalLookup = (): void => {
-    localLookup(true, (response) => {
-      if (response.type === 'Error') {
+    localLookup(true, (r) => {
+      if (r.type === 'Error') {
+        hub.dispatch({ type: 'ErrorEvent', payload: r.error });
         setUserSettingsState({
           status: 'error',
-          error: response.error,
+          error: r.error,
         });
-        log.error('could not get user settings %O', response.error);
+        log.error('could not get user settings %O', r.error);
 
         // localLookupInterval = setTimeout(() => {
         //   log.info('Refetching settings...');
@@ -70,7 +75,7 @@ const Popup: React.FC<PopupProps> = ({
         localLookupInterval = undefined;
       }
 
-      setUserSettingsState({ status: 'done', payload: response.result });
+      setUserSettingsState({ status: 'done', payload: r.result });
     });
   };
 
@@ -81,6 +86,7 @@ const Popup: React.FC<PopupProps> = ({
           status: 'error',
           error: r.error,
         });
+        hub.dispatch({ type: 'ErrorEvent', payload: r.error });
       } else {
         setUserSettingsState({
           status: 'done',

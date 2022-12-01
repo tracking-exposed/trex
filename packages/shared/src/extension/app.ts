@@ -381,15 +381,6 @@ export async function boot(opts: BootOpts): Promise<App> {
   // register platform specific event handlers
   opts.hub.onRegister(opts.hub.hub, config);
 
-  // emergency button should be used when a supported with
-  // UX hack in place didn't see any UX change, so they
-  // can report the problem and we can handle it.
-  // initializeEmergencyButton();
-
-  // because the URL has been for sure reloaded, be sure to
-  // clear cache too
-  clearCache();
-
   // enable the ui
   if (settings.ux) {
     addCommonPageUI(
@@ -402,6 +393,15 @@ export async function boot(opts: BootOpts): Promise<App> {
         : settings.ux
     );
   }
+
+  // emergency button should be used when a supported with
+  // UX hack in place didn't see any UX change, so they
+  // can report the problem and we can handle it.
+  // initializeEmergencyButton();
+
+  // because the URL has been for sure reloaded, be sure to
+  // clear cache too
+  clearCache();
 
   // if (opts.webRequest && bo.webRequest) {
   //   bo.webRequest.onBeforeRequest.addListener(
@@ -421,26 +421,27 @@ export async function boot(opts: BootOpts): Promise<App> {
   const handshakeResponse = await serverHandshakeP(config);
 
   appLog.info('Server lookup cb %O', handshakeResponse);
+  let observer: MutationObserver | undefined;
   if (handshakeResponse.type === 'Error') {
     opts.hub.hub.dispatch({
       type: 'ErrorEvent',
       payload: handshakeResponse.error,
     });
-    throw handshakeResponse.error;
+    // throw handshakeResponse.error;
+  } else {
+    // invoke callback for successful authentication
+    opts.onAuthenticated(handshakeResponse.result);
+
+    // setup the dom mutation observer
+    observer = setupObserver(opts.observe, config);
   }
-
-  // setup the dom mutation observer
-  let observer = setupObserver(opts.observe, config);
-
-  // invoke callback for successful authentication
-  opts.onAuthenticated(handshakeResponse.result);
 
   // define the app context to return
   app = {
     config,
     reload: (c) => {
       appLog.debug('Reloading app with config %O', c);
-      observer.disconnect();
+      observer?.disconnect();
       opts.hub.hub.dispatch({
         type: 'WindowUnload',
       });
@@ -450,7 +451,7 @@ export async function boot(opts: BootOpts): Promise<App> {
       observer = setupObserver(opts.observe, c);
     },
     destroy: () => {
-      observer.disconnect();
+      observer?.disconnect();
       opts.hub.hub.clear();
       app = undefined;
     },

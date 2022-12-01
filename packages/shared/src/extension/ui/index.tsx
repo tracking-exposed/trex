@@ -5,6 +5,7 @@ import { Hub } from '../hub';
 import HubEvent from '../models/HubEvent';
 import { theme } from '../theme';
 import { ErrorSnackbars } from './ErrorSnackbars';
+import logger from '../logger';
 
 /**
  * Render a ReactNode in a container created by the given id
@@ -48,5 +49,7 @@ export const addCommonPageUI = (
   hub: Hub<HubEvent>,
   opts: CommonPageUIOptions
 ): void => {
+  logger.debug('Adding common page ui %s (%j)', id, opts);
+
   addPageUI(id, <Box>{opts.errors ? <ErrorSnackbars hub={hub} /> : null}</Box>);
 };

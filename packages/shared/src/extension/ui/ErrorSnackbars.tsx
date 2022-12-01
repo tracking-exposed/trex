@@ -1,9 +1,9 @@
 import * as React from 'react';
-import _ from 'lodash';
-import { Hub } from '../hub';
-import HubEvent from '../models/HubEvent';
+import { v4 as uuid } from 'uuid';
 import ErrorModal from '../../components/ErrorModal';
 import { appErrorDetailsToString } from '../../errors/AppError';
+import { Hub } from '../hub';
+import HubEvent from '../models/HubEvent';
 
 interface ErrorSnackbarsProps {
   hub: Hub<HubEvent>;
@@ -12,16 +12,19 @@ export const ErrorSnackbars: React.FC<ErrorSnackbarsProps> = ({ hub }) => {
   // const [show, setShow] = React.useState(false);
   const [data, setData] = React.useState<any[]>([]);
 
-  React.useEffect(() => {
-    hub.on(
-      'ErrorEvent',
-      _.debounce((e) => {
-        setData([...data, e.payload]);
-      }, 400)
-    );
-  }, [data]);
+  const updateData = (d: any): void => {
+    setData((data) => [...data, d]);
+  };
 
-  console.log('errors snackbars', data);
+  React.useEffect(() => {
+    hub.on('ErrorEvent', (e) => {
+      if (e.payload) {
+        updateData({ ...e.payload, id: uuid() });
+      }
+    });
+
+    return () => {};
+  }, []);
 
   return (
     <div
@@ -29,29 +32,29 @@ export const ErrorSnackbars: React.FC<ErrorSnackbarsProps> = ({ hub }) => {
         position: 'fixed',
         top: 20,
         right: 20,
-        minHeight: 200,
-        width: 500,
+        minHeight: data.length > 0 ? 200 : 0,
+        width: data.length > 0 ? 500 : 0,
         zIndex: 9900,
         boxSizing: 'content-box',
       }}
     >
-      {data.map((d, i) => {
-        const details = appErrorDetailsToString(d);
-        return (
-          <ErrorModal
-            name={d.name}
-            message={d.message}
-            details={details}
-            onClick={() => {
-              const head = data.slice(0, i);
-              const tail =
-                i === data.length - 1 ? [] : data.slice(i + 1, data.length);
-
-              setData([...head, ...tail]);
-            }}
-          />
-        );
-      })}
+      <div>
+        {data.map((d, i) => {
+          const details = appErrorDetailsToString(d);
+          return (
+            <ErrorModal
+              key={d.id}
+              name={d.name}
+              message={d.message}
+              details={details}
+              style={{ position: 'relative', marginBottom: 20 }}
+              onClick={() => {
+                setData((data) => data.filter((dd) => dd.id !== d.id));
+              }}
+            />
+          );
+        })}
+      </div>
     </div>
   );
 };

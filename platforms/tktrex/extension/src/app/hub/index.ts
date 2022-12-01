@@ -55,7 +55,7 @@ function sync(hub: Hub<TKHubEvent>, config: UserSettings): void {
         if (response.type === 'Error') {
           hub.dispatch({
             type: 'ErrorEvent',
-            payload: response.payload,
+            payload: response.error,
           });
         } else {
           state.content = [];
