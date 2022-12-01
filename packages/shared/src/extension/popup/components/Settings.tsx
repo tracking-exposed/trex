@@ -142,7 +142,7 @@ export const Settings: React.FC<SettingsProps> = ({
           <Switch
             edge="end"
             onChange={toggleUX}
-            checked={ux}
+            checked={!!ux}
             inputProps={{ 'aria-labelledby': 'tktrex-ux-switch' }}
           />
         </ListItemSecondaryAction>

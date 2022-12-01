@@ -3,6 +3,11 @@ export interface HubEventBase {
   payload?: unknown;
 }
 
+export interface ErrorEvent extends HubEventBase {
+  type: 'ErrorEvent';
+  payload: unknown;
+}
+
 export interface APIEvent extends HubEventBase {
   type: 'APIEvent';
   payload: {
@@ -57,8 +62,9 @@ export interface WindowUnloadEvent extends HubEventBase {
 }
 
 export type HubEvent =
+  | ErrorEvent
   | WindowUnloadEvent
-/*  | FullSaveEvent<any>  -- issue #444 */
+  /*  | FullSaveEvent<any>  -- issue #444 */
   | SyncResponseEvent
   | APISyncResponseEvent
   | APIEvent;

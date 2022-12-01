@@ -2,6 +2,7 @@
 import { isLeft } from 'fp-ts/lib/Either';
 import * as t from 'io-ts';
 import { PathReporter } from 'io-ts/lib/PathReporter';
+import { toValidationError } from '../../errors/ValidationError';
 import { HandshakeResponse } from '../../models/HandshakeBody';
 import log from '../logger';
 import { Message, ServerLookup } from '../models/Message';
@@ -36,10 +37,9 @@ const ifValid =
       // eslint-disable-next-line n/no-callback-literal
       cb({
         type: 'Error',
-        error: new Error(
-          `Error during '${m}' on codec ${codec.name} validation \n\n`.concat(
-            PathReporter.report(v).join('\n')
-          )
+        error: toValidationError(
+          `Error during decode of backend response (${codec.name}) \n\n`,
+          v.left
         ),
       });
     } else {

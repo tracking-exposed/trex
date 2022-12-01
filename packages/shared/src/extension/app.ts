@@ -20,6 +20,7 @@ import log from './logger';
 import HubEvent from './models/HubEvent';
 import { ServerLookup } from './models/Message';
 import UserSettings from './models/UserSettings';
+import { addCommonPageUI } from './ui';
 import { bo } from './utils/browser.utils';
 
 // instantiate a proper logger
@@ -88,6 +89,12 @@ export interface BootOpts {
     onRegister: (h: Hub<HubEvent>, config: UserSettings) => void;
   };
   onAuthenticated: (res: any) => void;
+  ui?: {
+    common: {
+      id?: string;
+      errors?: boolean;
+    };
+  };
 }
 
 /**
@@ -107,7 +114,7 @@ let oldHref: string;
  */
 function setupObserver(
   { handlers: _handlers, platformMatch, onLocationChange }: SetupObserverOpts,
-  config: UserSettings
+  settings: UserSettings
 ): MutationObserver {
   // group handlers by type and `ObserverHandler.observe?`
   // to subscribe them to proper DOM and location changes
@@ -147,7 +154,7 @@ function setupObserver(
     appLog.debug('handler listen for mutation %O', handler);
     dom.on(handler.match.selector, (node) =>
       handle(node, handler, h, {
-        ...config,
+        ...settings,
         href: window.location.toString(),
       } as any)
     );
@@ -171,7 +178,7 @@ function setupObserver(
                   // appLog.debug('Mutation target %s', (r.target as Element).id);
                   if (`#${(r.target as any).id}` === handler.match.selector) {
                     // appLog.debug('Target match %O', (r.target as any).id);
-                    handle(r.target as any, handler, h, config);
+                    handle(r.target as any, handler, h, settings);
                   }
                 });
               }
@@ -205,7 +212,7 @@ function setupObserver(
               );
 
               handle(window.document.body, routeHandlerOpts, routeHandler[0], {
-                ...config,
+                ...settings,
                 href: window.location.toString(),
               } as any);
             }
@@ -225,9 +232,9 @@ function setupObserver(
 
   window.addEventListener('unload', () => {
     appLog.debug('Window unloading, disconnect the observer...');
-    if (observer) {
-      observer.disconnect();
-    }
+    observer?.disconnect();
+    // TODO: maybe destroy the app?
+    // app?.destroy();
   });
 
   if (body) {
@@ -249,8 +256,6 @@ export interface App {
   destroy: () => void;
 }
 
-let config: any;
-
 /**
  * Transform functions that send messages to background
  * to promises for better code flow.
@@ -269,6 +274,8 @@ const serverHandshakeP = (
 
 let loading = false;
 let app: App | undefined;
+let config: any;
+
 export async function boot(opts: BootOpts): Promise<App> {
   if (app) {
     appLog.debug('App already booted!');
@@ -326,8 +333,8 @@ export async function boot(opts: BootOpts): Promise<App> {
 
   // merge settings taken from db with ones defined in settings.json, giving the precedence to the latter
   const settings: UserSettings = {
-    ...localSettings.result,
     ...jsonSettings.result,
+    ...localSettings.result,
   } as any;
 
   if (!settings.publicKey || !settings.secretKey) {
@@ -383,6 +390,19 @@ export async function boot(opts: BootOpts): Promise<App> {
   // clear cache too
   clearCache();
 
+  // enable the ui
+  if (settings.ux) {
+    addCommonPageUI(
+      opts.ui?.common.id ?? 'trex-extension-common-ui',
+      opts.hub.hub,
+      settings.ux
+        ? {
+            errors: true,
+          }
+        : settings.ux
+    );
+  }
+
   // if (opts.webRequest && bo.webRequest) {
   //   bo.webRequest.onBeforeRequest.addListener(
   //     (d) => {
@@ -402,6 +422,10 @@ export async function boot(opts: BootOpts): Promise<App> {
 
   appLog.info('Server lookup cb %O', handshakeResponse);
   if (handshakeResponse.type === 'Error') {
+    opts.hub.hub.dispatch({
+      type: 'ErrorEvent',
+      payload: handshakeResponse.error,
+    });
     throw handshakeResponse.error;
   }
 

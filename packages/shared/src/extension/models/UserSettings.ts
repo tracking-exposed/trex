@@ -5,7 +5,7 @@ export const UserSettings = t.type(
     active: t.boolean,
     publicKey: t.string,
     secretKey: t.string,
-    ux: t.boolean,
+    ux: t.union([t.boolean, t.partial({ errors: t.boolean })]),
     researchTag: t.union([t.string, t.undefined]),
     experimentId: t.union([t.string, t.undefined]),
   },
