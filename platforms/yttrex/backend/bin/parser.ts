@@ -4,6 +4,7 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('module-alias')({ base: process.cwd() });
 
+import { FixtureReporter } from '@shared/parser/reporters/FixtureReporter';
 import * as mongo3 from '@shared/providers/mongo.provider';
 import fs from 'fs';
 import _ from 'lodash';
@@ -76,6 +77,10 @@ const run = async (): Promise<void> => {
       write: mongoW,
     };
 
+    const errorReporter = FixtureReporter(
+      path.resolve(process.cwd(), '__tests__/fixtures/htmls')
+    );
+
     /* call the async infinite loop function */
     void GetParserProvider('htmls', {
       db,
@@ -94,33 +99,7 @@ const run = async (): Promise<void> => {
       saveResults: updateMetadataAndMarkHTML(db),
       config: {
         ...parserConfig,
-        errorReporter: (e: HTMLSource) => {
-          const entryNature = e.html.nature.type ?? 'failed';
-
-          const fixtureFolderPath = path.resolve(
-            process.cwd(),
-            '__tests__/fixtures/htmls',
-            entryNature
-          );
-
-          // ensure fixtures folder path exists
-          if (!fs.existsSync(fixtureFolderPath)) {
-            fs.mkdirSync(fixtureFolderPath, { recursive: true });
-          }
-
-          const fixturePath = path.resolve(
-            fixtureFolderPath,
-            `${e.html.id}.json`
-          );
-
-          fs.writeFileSync(
-            fixturePath,
-            JSON.stringify({
-              sources: [e.html],
-              metadata: {},
-            })
-          );
-        },
+        errorReporter: errorReporter.report,
       },
     })
       .run({

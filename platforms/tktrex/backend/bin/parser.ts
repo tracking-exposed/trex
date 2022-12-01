@@ -7,6 +7,7 @@ moduleAlias({ base: process.cwd() });
 import nconf from 'nconf';
 nconf.argv().env().file({ file: 'config/settings.json' });
 
+import { FixtureReporter } from '@shared/parser/reporters/FixtureReporter';
 import * as mongo3 from '@shared/providers/mongo.provider';
 import { GetParserProvider } from '@shared/providers/parser.provider';
 import { TKMetadata } from '@tktrex/shared/models/metadata';
@@ -15,6 +16,7 @@ import { HTMLSource } from '@tktrex/shared/parser/source';
 import fs from 'fs';
 import _ from 'lodash';
 
+import { toMetadata } from '@tktrex/shared/parser/metadata';
 import path from 'path';
 import {
   addDom,
@@ -23,7 +25,6 @@ import {
   parserConfig,
   updateMetadataAndMarkHTML,
 } from '../lib/parser';
-import { toMetadata } from '@tktrex/shared/parser/metadata';
 
 const AMOUNT_DEFAULT = 20;
 const BACKINTIMEDEFAULT = 1;
@@ -77,6 +78,10 @@ const run = async (): Promise<void> => {
       write: mongoW,
     };
 
+    const errorReporter = FixtureReporter(
+      path.resolve(process.cwd(), `parsers/__tests__/fixtures`)
+    );
+
     /* call the async infinite loop function */
     void GetParserProvider('htmls', {
       db,
@@ -95,32 +100,7 @@ const run = async (): Promise<void> => {
       getEntryNatureType: (e) => e.html.type,
       config: {
         ...parserConfig,
-        errorReporter: (e: any) => {
-          const entryNature = e.html.nature.type ?? 'failed';
-          const fixtureFolderPath = path.resolve(
-            process.cwd(),
-            'parsers/__tests__/fixtures',
-            entryNature
-          );
-
-          // ensure fixtures folder path exists
-          if (!fs.existsSync(fixtureFolderPath)) {
-            fs.mkdirSync(fixtureFolderPath, { recursive: true });
-          }
-
-          const fixturePath = path.resolve(
-            fixtureFolderPath,
-            `${e.html.id}.json`
-          );
-
-          fs.writeFileSync(
-            fixturePath,
-            JSON.stringify({
-              sources: [e.html],
-              metadata: {},
-            })
-          );
-        },
+        errorReporter: errorReporter.report,
       },
     }).run({
       singleUse: typeof id === 'string' ? id : false,

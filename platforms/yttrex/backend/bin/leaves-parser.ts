@@ -21,6 +21,7 @@ import {
   toMetadata,
   updateAdvertisingAndMetadata,
 } from '../lib/parser/leaf';
+import { FixtureReporter } from '@shared/parser/reporters/FixtureReporter';
 
 nconf.argv().env().file({ file: 'config/settings.json' });
 
@@ -72,6 +73,10 @@ const run = async (): Promise<void> => {
       write: mongoW,
     };
 
+    const errorReporter = FixtureReporter(
+      path.resolve(process.cwd(), '__tests__/fixtures/htmls')
+    );
+
     /* call the async infinite loop function */
     void GetParserProvider<
       typeof LeafSource,
@@ -95,33 +100,7 @@ const run = async (): Promise<void> => {
       saveResults: updateAdvertisingAndMetadata(db),
       config: {
         ...parserConfig,
-        errorReporter: (e: LeafSource) => {
-          const entryNature = e.html.nature.type ?? 'failed';
-
-          const fixtureFolderPath = path.resolve(
-            process.cwd(),
-            '__tests__/fixtures/htmls',
-            entryNature
-          );
-
-          // ensure fixtures folder path exists
-          if (!fs.existsSync(fixtureFolderPath)) {
-            fs.mkdirSync(fixtureFolderPath, { recursive: true });
-          }
-
-          const fixturePath = path.resolve(
-            fixtureFolderPath,
-            `${e.html.id}.json`
-          );
-
-          fs.writeFileSync(
-            fixturePath,
-            JSON.stringify({
-              sources: [e.html],
-              metadata: {},
-            })
-          );
-        },
+        errorReporter: errorReporter.report,
       },
     }).run({
       singleUse: typeof id === 'string' ? id : false,
