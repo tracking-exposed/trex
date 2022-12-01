@@ -1,7 +1,8 @@
-.ErrorModal{
+.ErrorModal {
   width: 100%;
   max-width: 500px;
   overflow: hidden;
+  background: white;
   border: 2px solid #de605f;
   border-radius: 3px;
   justify-content: space-between;
