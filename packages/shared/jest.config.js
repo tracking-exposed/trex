@@ -3,11 +3,10 @@ const jestBaseConfig = require('../../jest.config.base');
 /** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
 module.exports = {
   ...jestBaseConfig,
-  rootDir: __dirname,
   testEnvironment: 'jsdom',
   displayName: '@shared',
   moduleNameMapper: {
-    '\\.(css)$': '<rootDir>/__mocks__/styleMock.js',
+    '\\.(css)$': '<rootDir>/../../__mocks__/styleMock.js',
   },
   modulePathIgnorePatterns: [
     ...jestBaseConfig.modulePathIgnorePatterns,
