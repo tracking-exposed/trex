@@ -6,6 +6,9 @@ module.exports = {
   rootDir: __dirname,
   testEnvironment: 'jsdom',
   displayName: '@shared',
+  moduleNameMapper: {
+    '\\.(css)$': '<rootDir>/__mocks__/styleMock.js',
+  },
   modulePathIgnorePatterns: [
     ...jestBaseConfig.modulePathIgnorePatterns,
     'profiles',
