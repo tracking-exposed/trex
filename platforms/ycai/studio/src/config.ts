@@ -8,6 +8,7 @@ export const config: AppEnv = {
     process.env.DATA_DONATION_FLUSH_INTERVAL ?? '3000',
   DEBUG: process.env.DEBUG ?? '@YCAI:*:error',
   WEB_URL: process.env.WEB_URL as string,
-  BUILD_DATE: process.env.BUILD_DATE ?? new Date().toISOString(),
+  BUILD_DATE:
+    process.env.BUILD_DATE ?? new Date().toISOString().replace(/\.\d+/, ''),
   VERSION: process.env.VERSION as string,
 };
