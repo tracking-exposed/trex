@@ -8,9 +8,9 @@
     "test": "jest",
     "coc": "DEBUG=* ts-node bin/count-o-clock.js",
     "watch": "key=fuffa ts-node-dev -r tsconfig-paths/register --respawn --transpile-only bin/server",
-    "start": "nodemon build/bin/server",
+    "start": "node build/bin/server",
     "parserv:watch": "ts-node-dev -r tsconfig-paths/register bin/parser",
-    "parserv": "nodemon build/bin/parser",
+    "parserv": "node build/bin/parser",
     "build": "tsc -b tsconfig.build.json",
     "clean-test-db": "DEBUG=\"tk:*\" ts-node ./scripts/clean-test-db.ts"
   },
@@ -42,7 +42,6 @@
     "nacl-signature": "^1.0.0",
     "nconf": "^0.11.3",
     "node-fetch": "^2.6.7",
-    "nodemon": "^1.19.4",
     "ts-endpoint": "^2.0.0",
     "tweetnacl": "^0.14.5"
   },
