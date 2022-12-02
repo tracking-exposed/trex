@@ -382,17 +382,12 @@ export async function boot(opts: BootOpts): Promise<App> {
   opts.hub.onRegister(opts.hub.hub, config);
 
   // enable the ui
-  if (settings.ux) {
-    addCommonPageUI(
-      opts.ui?.common.id ?? 'trex-extension-common-ui',
-      opts.hub.hub,
-      settings.ux
-        ? {
-            errors: true,
-          }
-        : settings.ux
-    );
-  }
+
+  addCommonPageUI(
+    opts.ui?.common.id ?? 'trex-extension-common-ui',
+    opts.hub.hub,
+    { errors: true }
+  );
 
   // emergency button should be used when a supported with
   // UX hack in place didn't see any UX change, so they
