@@ -95,25 +95,30 @@ export const Settings: React.FC<SettingsProps> = ({
           />
         </ListItem>
       ) : null}
-      {enabled.experimentId ? (
-          <ListItem
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}
-          >
-            <ListItemIcon>
-              <LabelIcon />
-            </ListItemIcon>
-            <InputLabel>Experiment Id</InputLabel>
-            <Input
-              value={experimentId ?? ""}
-              style={{ marginLeft: 8 }}
-              onChange={doSetExperimentId}
-            />
-          </ListItem>
-        ) : null}
+      {enabled.experimentId &&
+      experimentId &&
+      experimentId !== 'DEFAULT_UNSET' ? (
+        <ListItem
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}
+        >
+          <ListItemIcon>
+            <LabelIcon />
+          </ListItemIcon>
+          <span>{experimentId}</span>
+          <InputLabel>Experiment Id</InputLabel>
+          <Input
+            value={experimentId ?? ''}
+            style={{ marginLeft: 8, color: 'rgba(0, 0, 0, 0.87)' }}
+            onChange={doSetExperimentId}
+            disableUnderline={true}
+            disabled={true}
+          />
+        </ListItem>
+      ) : null}
       <ListItem>
         <ListItemIcon>
           <TimelineIcon />
