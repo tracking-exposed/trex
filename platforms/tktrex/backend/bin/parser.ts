@@ -28,6 +28,10 @@ import {
 
 const AMOUNT_DEFAULT = 20;
 const BACKINTIMEDEFAULT = 1;
+const FIXTURES_FOLDER = path.resolve(
+  process.cwd(),
+  `parsers/__tests__/fixtures`
+);
 
 /*
  * A function to retrieve htmls by filter and amount
@@ -78,9 +82,7 @@ const run = async (): Promise<void> => {
       write: mongoW,
     };
 
-    const errorReporter = FixtureReporter(
-      path.resolve(process.cwd(), `parsers/__tests__/fixtures`)
-    );
+    const errorReporter = FixtureReporter(FIXTURES_FOLDER);
 
     /* call the async infinite loop function */
     void GetParserProvider('htmls', {
