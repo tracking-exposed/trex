@@ -4,6 +4,7 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('module-alias')({ base: process.cwd() });
 
+import { FixtureReporter } from '@shared/parser/reporters/FixtureReporter';
 import * as mongo3 from '@shared/providers/mongo.provider';
 import fs from 'fs';
 import _ from 'lodash';
@@ -26,6 +27,7 @@ nconf.argv().env().file({ file: 'config/settings.json' });
 
 const AMOUNT_DEFAULT = 20;
 const BACKINTIMEDEFAULT = 1;
+const FIXTURES_FOLDER = path.resolve(process.cwd(), '__tests__/fixtures/htmls');
 
 /*
  * A function to retrieve htmls by filter and amount
@@ -76,6 +78,8 @@ const run = async (): Promise<void> => {
       write: mongoW,
     };
 
+    const errorReporter = FixtureReporter(FIXTURES_FOLDER);
+
     /* call the async infinite loop function */
     void GetParserProvider('htmls', {
       db,
@@ -94,22 +98,7 @@ const run = async (): Promise<void> => {
       saveResults: updateMetadataAndMarkHTML(db),
       config: {
         ...parserConfig,
-        errorReporter: (e: HTMLSource) => {
-          const entryNature = e.html.nature.type ?? 'failed';
-          const fixturePath = path.resolve(
-            path.resolve(process.cwd(), '__tests__/fixtures/htmls'),
-            entryNature,
-            `${e.html.id}.json`
-          );
-
-          fs.writeFileSync(
-            fixturePath,
-            JSON.stringify({
-              sources: [e.html],
-              metadata: {},
-            })
-          );
-        },
+        errorReporter: errorReporter.report,
       },
     })
       .run({
