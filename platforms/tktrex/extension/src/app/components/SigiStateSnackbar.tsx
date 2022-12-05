@@ -2,6 +2,7 @@ import tkHub from '../hub';
 import * as React from 'react';
 import { Snackbar } from '@material-ui/core';
 import _ from 'lodash';
+import { act } from 'react-dom/test-utils';
 
 export const SigiStateSnackbar: React.FC = () => {
   // const [show, setShow] = React.useState(false);
@@ -12,7 +13,9 @@ export const SigiStateSnackbar: React.FC = () => {
       'SigiState',
       _.debounce((e) => {
         const payload: any = e.payload;
-        setData([...data, payload]);
+        act(() => {
+          setData([...data, payload]);
+        });
       }, 400),
     );
   }, [data]);
