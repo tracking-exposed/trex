@@ -27,6 +27,7 @@ nconf.argv().env().file({ file: 'config/settings.json' });
 
 const AMOUNT_DEFAULT = 20;
 const BACKINTIMEDEFAULT = 1; // minutes
+const FIXTURE_FOLDER = path.resolve(process.cwd(), '__tests__/fixtures/leaves');
 
 const run = async (): Promise<void> => {
   const htmlAmount = _.parseInt(nconf.get('amount'))
@@ -73,9 +74,7 @@ const run = async (): Promise<void> => {
       write: mongoW,
     };
 
-    const errorReporter = FixtureReporter(
-      path.resolve(process.cwd(), '__tests__/fixtures/htmls')
-    );
+    const errorReporter = FixtureReporter(FIXTURE_FOLDER);
 
     /* call the async infinite loop function */
     void GetParserProvider<

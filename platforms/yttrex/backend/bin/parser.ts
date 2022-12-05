@@ -27,6 +27,7 @@ nconf.argv().env().file({ file: 'config/settings.json' });
 
 const AMOUNT_DEFAULT = 20;
 const BACKINTIMEDEFAULT = 1;
+const FIXTURES_FOLDER = path.resolve(process.cwd(), '__tests__/fixtures/htmls');
 
 /*
  * A function to retrieve htmls by filter and amount
@@ -77,9 +78,7 @@ const run = async (): Promise<void> => {
       write: mongoW,
     };
 
-    const errorReporter = FixtureReporter(
-      path.resolve(process.cwd(), '__tests__/fixtures/htmls')
-    );
+    const errorReporter = FixtureReporter(FIXTURES_FOLDER);
 
     /* call the async infinite loop function */
     void GetParserProvider('htmls', {
