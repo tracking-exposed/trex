@@ -30,6 +30,7 @@ const BUILD_ENV = t.strict(
     NODE_ENV,
     BUNDLE_TARGET: t.union([t.literal('firefox'), t.literal('chrome')]),
     BUNDLE_STATS: BooleanFromString,
+    BUILD_TRANSPILE_ONLY: BooleanFromString,
     DEBUG: t.union([t.undefined, t.string]),
   },
   'processENV'
@@ -50,6 +51,7 @@ export interface GetConfigParams<E extends t.Props> {
   };
   hot: boolean;
   target: WebpackConfig['target'];
+  transpileOnly?: boolean;
 }
 
 const getConfig = <E extends t.Props>(
@@ -82,6 +84,10 @@ const getConfig = <E extends t.Props>(
       BUNDLE_TARGET: 'chrome',
       BUNDLE_STATS: 'false',
       NODE_ENV: mode,
+      BUILD_TRANSPILE_ONLY:
+        process.env.BUILD_TRANSPILE_ONLY ?? opts.transpileOnly
+          ? `${opts.transpileOnly}`
+          : 'false',
       ...process.env,
     },
     BUILD_ENV.decode,
@@ -193,7 +199,7 @@ const getConfig = <E extends t.Props>(
               options: {
                 context: opts.cwd,
                 projectReferences: true,
-                transpileOnly: true,
+                transpileOnly: buildENV.BUILD_TRANSPILE_ONLY,
                 getCustomTransformers: () => ({
                   before: [
                     mode === 'development' &&

@@ -54,6 +54,9 @@ jobs:
       - name: Build Backend
         run: yarn tk:backend build
 
+      - name: Type Check
+        run: yarn tk:ext tsc -b
+
       - name: Build
         run: yarn tk:ext build
 
