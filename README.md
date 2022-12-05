@@ -10,6 +10,7 @@ This monorepo will eventually include all `packages` needed and `platforms` supp
 - `node >=16`
 - `yarn >=3.2.3`
 - [node-canvas](https://github.com/Automattic/node-canvas) deps depending on your OS
+- `docker`
 
 ## Monorepo structure
 
@@ -25,7 +26,6 @@ This monorepo will eventually include all `packages` needed and `platforms` supp
     - [tk:shared](./platforms/tktrex/shared/README.md)
     - [tk:ext](./platforms/tktrex/extension/README.md)
     - [tk:backend](./platforms/tktrex/backend/README.md)
-
 
 ### To start the services in production:
 

@@ -139,7 +139,7 @@ describe('Parser: Search', () => {
           });
 
           expect(_receivedResults).toMatchObject(
-            _expectedResults.map(({ secondsAgo, ...r }) => r)
+            _expectedResults.map(({ secondsAgo, published, ...r }) => r)
           );
         },
       })({ sources, metadata });
