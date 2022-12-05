@@ -59,7 +59,7 @@ module.exports = {
   env: (config) => ({
     ...config,
     BUILD: 'BUILD env variable',
-    BUILD_DATE: new Date().toISOString(),
+    BUILD_DATE: new Date().toISOString().replace(/\.\d+/, ''),
     DEVELOPMENT: true,
     FLUSH_INTERVAL: 9000,
     API_ROOT: 'API_ROOT env variable',
