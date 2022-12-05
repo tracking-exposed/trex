@@ -17,7 +17,8 @@
     "type-check": "tsc",
     "lint": "eslint ./bin ./lib ./models ./routes",
     "open-doc-api": "ts-node bin/open-doc-api.ts",
-    "old_start_old": "log=$(bash -c 'git log -30 --stat --oneline --decorate --graph') DEBUG=\"*,-body-parser:*,-express:*,-lib:*,-follow-redirects\" ts-node -r tsconfig-paths/register bin/server"
+    "old_start_old": "log=$(bash -c 'git log -30 --stat --oneline --decorate --graph') DEBUG=\"*,-body-parser:*,-express:*,-lib:*,-follow-redirects\" ts-node -r tsconfig-paths/register bin/server",
+    "clean-test-db": "DEBUG=\"yt:*\" ts-node ./scripts/clean-test-db.ts"
   },
   "author": "Claudio Agosti <claudio@tracking.exposed> and https://github.com/tracking-exposed/yttrex/graphs/contributors",
   "license": "AGPL-3.0",

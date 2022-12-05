@@ -11,7 +11,9 @@ yarn workspaces foreach run clean
 
 # build shared
 yarn shared build
-./docs/scripts/build.sh
+
+# TODO: docs fail to build at the moment
+# ./docs/scripts/build.sh
 
 
 # build yttrex extension
