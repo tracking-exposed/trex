@@ -2,6 +2,7 @@ process.env.API_ROOT = 'http://localhost:9001/api';
 process.env.VERSION = '99';
 process.env.FLUSH_INTERVAL = '4500';
 process.env.BUILD = new Date().toISOString();
+process.env.BUILD_DATE = new Date().toISOString().replace(/\.\d+/, '');
 
 // mocks
 import axiosMock from '../../test/__mocks__/axios.mock';

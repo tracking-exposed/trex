@@ -41,7 +41,7 @@ export const getHeadersForDataDonation = async(req: SyncReq): Promise<any> => {
     'Content-Type': 'application/json',
     'Content-Length': data.length,
     'X-Tktrex-Version': config.VERSION,
-    'X-Tktrex-Build': config.BUILD,
+    'X-Tktrex-Build': config.BUILD_DATE,
     'X-Tktrex-NonAuthCookieId': userSettings.researchTag ?? '',
     'X-Tktrex-PublicKey': userSettings.publicKey,
     'X-Tktrex-Signature': signature,

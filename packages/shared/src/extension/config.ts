@@ -4,7 +4,7 @@ export interface Config {
   DEVELOPMENT: boolean;
   FLUSH_INTERVAL: number;
   VERSION: string;
-  BUILD_DATE?: string;
+  BUILD_DATE: string;
   publicKey?: string;
   WEB_ROOT?: string;
 }
@@ -23,6 +23,10 @@ if (!process.env.FLUSH_INTERVAL) {
 
 if (!process.env.BUILD) {
   throw new Error('BUILD is not defined');
+}
+
+if (!process.env.BUILD_DATE) {
+  throw new Error('BUILD_DATE is not defined');
 }
 
 const config: Config = {

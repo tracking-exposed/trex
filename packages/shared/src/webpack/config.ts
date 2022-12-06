@@ -110,8 +110,8 @@ const getConfig = <E extends t.Props>(
     {
       ...process.env,
       NODE_ENV: mode,
-      BUILD_DATE: buildDate.toISOString(),
       BUILD: `On ${format(buildDate, 'PPPPpppp')}`,
+      BUILD_DATE: buildDate.toISOString(),
     },
     opts.env.decode,
     (validation) => {
@@ -120,6 +120,7 @@ const getConfig = <E extends t.Props>(
         console.error(PathReporter.report(validation).join('\n'));
         throw new Error(`${opts.env.name} decoding failed.`);
       }
+      webpackLogger.debug('App env %O', validation.right);
       return validation.right;
     }
   );
