@@ -66,7 +66,7 @@ describe('Metadata API', () => {
     });
 
     it('succeeds with valid `researchTag` ', async () => {
-      const researchTag = 'test-tag';
+      const researchTag = fc.sample(fc.string({ minLength: 10 }), 1)[0];
       const experimentId = fc.sample(fc.uuid(), 1)[0];
       const amount = 10;
 

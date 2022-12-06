@@ -34,7 +34,7 @@ export const getHeadersForDataDonation = async (req: SyncReq): Promise<any> => {
   const headers = {
     'Content-Type': 'application/json',
     'X-YTtrex-Version': config.VERSION,
-    'X-YTtrex-Build': config.BUILD,
+    'X-YTtrex-Build': config.BUILD_DATE,
     'X-YTtrex-NonAuthCookieId': userSettings.researchTag ?? '',
     'X-YTtrex-PublicKey': userSettings.publicKey,
     'X-YTtrex-Signature': sign,
