@@ -149,10 +149,12 @@ describe('TK App - profile ', () => {
           Accept: 'application/json',
         },
         params: undefined,
+        paramsSerializer: expect.any(Function),
         method: 'POST',
         responseType: 'json',
       });
 
+      // sigi state
       expect(axiosMock.request).toHaveBeenNthCalledWith(2, {
         url: '/v2/events',
         data: [expect.any(Object), expect.any(Object)],
@@ -168,6 +170,7 @@ describe('TK App - profile ', () => {
         },
         method: 'POST',
         params: undefined,
+        paramsSerializer: expect.any(Function),
         responseType: 'json',
       });
     });

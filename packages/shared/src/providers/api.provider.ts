@@ -169,7 +169,9 @@ export const MakeHTTPClient = (client: AxiosInstance): HTTPClient => {
                   },
                 });
               },
-              b.ValidateOutput === false ? t.unknown.decode : e.Output.decode
+              b && b.ValidateOutput === false
+                ? t.unknown.decode
+                : e.Output.decode
             ),
             TE.map((output) => {
               // apiLogger.debug('%s %s output: %O', e.Method, url, output);
