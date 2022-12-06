@@ -32,6 +32,7 @@ module.exports = {
   git: {
     requireUpstream: false,
     commitMessage: 'release: ${version} CHANGELOG [skip ci]',
+    pushArgs: ['--follow-tags', '--no-verify'],
   },
   github: {
     release: true,
