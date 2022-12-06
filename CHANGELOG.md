@@ -1,3 +1,25 @@
+## [2.8.1](https://github.com/tracking-exposed/trex/compare/v2.8.0...v2.8.1) (2022-12-06)
+
+- **tk:backend:** fixed mongo provider 'insertMany' typings and 'registerEmail' route handler export ([5d5c1ed](https://github.com/tracking-exposed/trex/commit/5d5c1ed09de5c538cbc0e3b9f32ac4e971ed70d0))
+- **workspace:** set 'transpileOnly' mode for ts-loader with 'BUILD_TRNASPILE_ONLY' env var ([#831](https://github.com/tracking-exposed/trex/issues/831)) ([df98b0f](https://github.com/tracking-exposed/trex/commit/df98b0f05b22a7aa62d50e96a3c81062b4c2508a))
+- **workspace:** upgrade mongodb@^4.12.1 ([c0dcef6](https://github.com/tracking-exposed/trex/commit/c0dcef6484b5a6159a8641fc327e088738643bd8))
+
+### Fixes
+
+- **backend:** ensure fixtures folder exists for backend parser error reporters ([#820](https://github.com/tracking-exposed/trex/issues/820)) ([991dc08](https://github.com/tracking-exposed/trex/commit/991dc0866b63b839029adf69119c0e2710fe4a86))
+- **guardoni:** experimentId parameter for download command ([d49bfa6](https://github.com/tracking-exposed/trex/commit/d49bfa6c000125ab9b81426654b49a26936a417c))
+- **shared:** ensure HTMLSize module can compute size correctly ([c9c43df](https://github.com/tracking-exposed/trex/commit/c9c43df503ecafaad2a451cb7c86cc48e3cf22e7))
+- **shared:** extension BUILD_DATE env proper format ([#835](https://github.com/tracking-exposed/trex/issues/835)) ([55a58bd](https://github.com/tracking-exposed/trex/commit/55a58bd89a7d55f7d4cc101a18cde5664db74e13))
+- **shared:** remove experiment id field when its unset ([#833](https://github.com/tracking-exposed/trex/issues/833)) ([87483a2](https://github.com/tracking-exposed/trex/commit/87483a22b477c8bed8fa713876083bd113341bad))
+- **shared:** remove ms from BUILD_DATE extension env vars ([#832](https://github.com/tracking-exposed/trex/issues/832)) ([c0ca9ed](https://github.com/tracking-exposed/trex/commit/c0ca9ed8aad5f977cd3cae8913578bc905500dcf))
+- **tk:backend:** disable list metadata output validation ([a63aec3](https://github.com/tracking-exposed/trex/commit/a63aec3143bac7a071cdcc3207b78e17e78df0ae))
+- **tk:backend:** remove redundant occurrence of 'api' from GET /api/v2/directives/public endpoint ([2d88557](https://github.com/tracking-exposed/trex/commit/2d885574f57be7695d69bf13a245bb36c7dcea69))
+- **workspace:** defined issue template [skip ci] ([#821](https://github.com/tracking-exposed/trex/issues/821)) ([c1bee43](https://github.com/tracking-exposed/trex/commit/c1bee433a51d2ef02222ab8a744445d9d7b5720a))
+- **workspace:** pre-push hook ([#815](https://github.com/tracking-exposed/trex/issues/815)) ([52b203a](https://github.com/tracking-exposed/trex/commit/52b203a56d6c90733a495286c993d2a01c7a8579))
+- **workspace:** remove DEBUG values from backends package.json scripts, close [#802](https://github.com/tracking-exposed/trex/issues/802) ([#827](https://github.com/tracking-exposed/trex/issues/827)) ([54d7681](https://github.com/tracking-exposed/trex/commit/54d7681d5cf32c06886fe6744256dec85ef97cd4))
+- **workspace:** skip verification when pushing release commit [skip ci] ([48029b5](https://github.com/tracking-exposed/trex/commit/48029b5a58af38f4cf140b9f3462de4ee8378d4b))
+- **workspace:** update documentation description for issue config [skip ci] ([2cf04f7](https://github.com/tracking-exposed/trex/commit/2cf04f739b6d256a10943938a3140e2c6ae460c4))
+
 ## [2.8.0](https://github.com/tracking-exposed/trex/compare/v2.7.1...v2.8.0) (2022-11-28)
 
 ### Features
