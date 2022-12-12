@@ -15,7 +15,7 @@ yarn yt:backend clean-test-db
 # yarn pm2 save
 
 # run tests one after the other to be sure the data doesn't overlap and make some of them fail
-yarn test --ci --bail --forceExit
+yarn test --ci --bail --forceExit --coverage
 
 # restart backends and parsers with 'development' environment
 # yarn pm2 restart -a --env development platforms/ecosystem.dev.config.js
