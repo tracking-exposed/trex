@@ -58,6 +58,15 @@ export const toAPIError = (e: unknown): APIError => {
   });
 };
 
+/**
+ * Lift an axios Promise to a TaskEither
+ * validating the `response.data`
+ * with the given `decode` function
+ *
+ * @param lp - A lazy axios promise
+ * @param decode - A function used to decode the `response.data` that returns an {@link E.Either}
+ * @returns A TaskEither<APIError, B> instance {@link TE.TaskEither}
+ */
 const liftFetch = <B>(
   lp: () => Promise<AxiosResponse<B>>,
   decode: <A>(a: A) => E.Either<t.Errors, B>
@@ -76,9 +85,12 @@ const liftFetch = <B>(
   );
 };
 
+/**
+ * HTTPClient interface that provide common methods
+ * as {@link TE.TaskEither} instead of {@link Promise}
+ */
 export interface HTTPClient {
   apiFromEndpoint: <E extends MinimalEndpointInstance>(e: E) => TERequest<E>;
-
   request: <T, R>(
     config: AxiosRequestConfig<T>,
     decode: (o: unknown) => E.Either<t.Errors, R>
@@ -99,6 +111,12 @@ export interface HTTPClient {
   ) => TE.TaskEither<APIError, R>;
 }
 
+/**
+ * Create an {@link HTTPClient} using the given axios client
+ *
+ * @param client - Axios instance {@link AxiosInstance}
+ * @returns An {@link HTTPClient}
+ */
 export const MakeHTTPClient = (client: AxiosInstance): HTTPClient => {
   const request = <T, R>(
     config: AxiosRequestConfig<T>,
@@ -131,6 +149,9 @@ export const MakeHTTPClient = (client: AxiosInstance): HTTPClient => {
   ): TERequest<E> => {
     return command<any, APIError, TypeOfEndpointInstance<E>['Output']>((b) =>
       pipe(
+        /**
+         * Decode all given input
+         */
         sequenceS(E.Applicative)({
           params: (e.Input?.Params ?? t.any).decode(b?.Params),
           query: (e.Input?.Query ?? t.any).decode(b?.Query),
@@ -169,6 +190,10 @@ export const MakeHTTPClient = (client: AxiosInstance): HTTPClient => {
                   },
                 });
               },
+              /**
+               * Avoid decoding the output when `b.ValidateOutput` is explicitly set
+               * to `false`
+               */
               b && b.ValidateOutput === false
                 ? t.unknown.decode
                 : e.Output.decode
@@ -216,6 +241,12 @@ type API<ES extends EndpointsConfig> = {
     : never;
 } & { request: HTTPClient['request'] };
 
+/**
+ * Derive API client from endpoints definition
+ *
+ * @param client - An {@link HTTPClient}
+ * @returns A client with methods derived from given endpoint definitions
+ */
 const makeAPI =
   (client: HTTPClient) =>
   <ES extends { [key: string]: ResourceEndpointsRecord }>(es: ES): API<ES> => {
