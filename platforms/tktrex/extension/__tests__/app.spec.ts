@@ -254,7 +254,7 @@ describe('TK App', () => {
       // video handler should be invoked as the url includes `watch`
 
       const { handle: _handle, ...videoOpts } = videoMatcher;
-      expect(handleVideoSpy).toHaveBeenCalledTimes(3);
+      expect(handleVideoSpy).toHaveBeenCalledTimes(4);
       expect(handleSearchSpy).toHaveBeenCalledTimes(48);
       expect(hubDispatchSpy).toHaveBeenCalledTimes(2);
 

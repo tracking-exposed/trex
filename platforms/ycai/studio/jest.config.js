@@ -8,8 +8,8 @@ const tsPaths = pathsToModuleNameMapper(tsConfig.compilerOptions.paths, {
 
 const moduleNameMapper = {
   ...tsPaths,
-  '\\.(svg|ttf)$': '<rootDir>/__mocks__/fileMock.js',
-  '\\.(css)$': '<rootDir>/__mocks__/styleMock.js',
+  '\\.(svg|ttf)$': '<rootDir>/../../../__mocks__/fileMock.js',
+  '\\.(css)$': '<rootDir>/../../../__mocks__/styleMock.js',
 };
 
 /** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */

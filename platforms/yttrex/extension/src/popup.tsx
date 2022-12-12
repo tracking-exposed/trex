@@ -1,17 +1,19 @@
-import { renderPopup } from '@shared/extension/popup';
-import config from '@shared/extension/config';
-import * as React from 'react';
 import {
-  StayCurrentLandscape as StayCurrentLandscapeIcon,
-  OndemandVideo as OndemandVideoIcon,
   AccountBox as AccountBoxIcon,
+  OndemandVideo as OndemandVideoIcon,
   SearchOutlined,
+  StayCurrentLandscape as StayCurrentLandscapeIcon,
 } from '@material-ui/icons';
+import config from '@shared/extension/config';
+import { renderPopup } from '@shared/extension/popup';
+import * as React from 'react';
+import ytHub from './handlers/hub';
 
 renderPopup({
   platform: 'YouTube',
   platformURL: 'https://youtube.com',
   logo: '/yttrex-logo.png',
+  hub: ytHub,
   settings: {
     enabled: {
       researchTag: true,
