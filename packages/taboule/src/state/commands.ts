@@ -6,7 +6,7 @@ import { TabouleQueries } from './queries';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { APIError } from '@shared/errors/APIError';
-import { ListMetadataQuery as TKListMetadataQuery } from '@tktrex/shared/models/http/metadata/query/ListMetadata.query';
+import { ListMetadataQuery as TKListMetadataQuery } from '@tktrex/shared/models/http/query/ListMetadata.query';
 import { ListMetadataQuery as YTListMetadataQuery } from '@yttrex/shared/models/http/metadata/query/ListMetadata.query';
 
 const downloadFile = (filename: string, content: string): void => {
