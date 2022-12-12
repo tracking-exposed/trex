@@ -6,7 +6,6 @@ export class AppError extends IOError {
 }
 
 export const toAppError = (e: unknown): AppError => {
-
   if (isAPIError(e)) {
     return {
       ...e,
@@ -33,4 +32,12 @@ export const toAppError = (e: unknown): AppError => {
       status: (e as any).message ?? 'Something bad happened',
     },
   };
+};
+
+export const appErrorDetailsToString = (e: AppError): string[] => {
+  if (e.details.kind === 'DecodingError') {
+    return e.details.errors as string[];
+  }
+
+  return [e.details.kind, e.details.status, JSON.stringify(e.details.meta)];
 };

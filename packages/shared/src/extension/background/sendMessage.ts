@@ -1,12 +1,13 @@
 /* eslint-disable node/no-callback-literal */
-import { isLeft } from 'fp-ts/lib/Either';
 import * as t from 'io-ts';
-import { PathReporter } from 'io-ts/lib/PathReporter';
+import { isAPIError } from '../../errors/APIError';
 import { HandshakeResponse } from '../../models/HandshakeBody';
 import log from '../logger';
 import { Message, ServerLookup } from '../models/Message';
 import { UserSettings } from '../models/UserSettings';
 import { bo } from '../utils/browser.utils';
+import * as E from 'fp-ts/Either';
+import { toValidationError } from '../../errors/ValidationError';
 
 interface ErrorResponse {
   type: 'Error';
@@ -26,25 +27,26 @@ const ifValid =
   (m: Message['type'], cb: SendResponse<t.TypeOf<C>>) =>
   (x: unknown): void => {
     log.debug('Check response is valid %O', x);
+    if (isAPIError(x)) {
+      // eslint-disable-next-line n/no-callback-literal
+      cb({ type: 'Error', error: x });
+      return;
+    }
+
     const v = codec.decode(x);
 
-    if (isLeft(v)) {
-      const msg = `Error decoding backend response:\n${PathReporter.report(
-        v
-      ).join('\n')}`;
-      log.error(msg);
+    if (E.isLeft(v)) {
       // eslint-disable-next-line n/no-callback-literal
       cb({
         type: 'Error',
-        error: new Error(
-          `Error during '${m}' on codec ${codec.name} validation \n\n`.concat(
-            PathReporter.report(v).join('\n')
-          )
+        error: toValidationError(
+          `Error decoding ${m} output with ${codec.name}`,
+          v.left
         ),
       });
     } else {
       // eslint-disable-next-line n/no-callback-literal
-      cb({ type: 'Success', result: v.right });
+      cb({ type: 'Success', result: x });
     }
   };
 

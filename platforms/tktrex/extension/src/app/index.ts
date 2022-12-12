@@ -22,4 +22,9 @@ void boot({
     onLocationChange,
   },
   onAuthenticated: tkTrexActions,
+  ui: {
+    common: {
+      errors: true,
+    },
+  },
 });

@@ -10,7 +10,7 @@ import { HTMLSize } from '@shared/extension/utils/HTMLSize.utils';
 import _ from 'lodash';
 import tkHub from './hub';
 import { INTERCEPTOR_CONTAINER_ID } from '../interceptor/constants';
-import { addAppUI } from './components';
+import { addTKAppUI } from './components';
 
 export const appLog = log.extend('app');
 const searchSize = HTMLSize();
@@ -25,9 +25,7 @@ export function tkTrexActions(remoteInfo: unknown): void {
   appLog.info('initialize watchers, remoteInfo available:', remoteInfo);
 
   // initialize ui
-
-  const apiInterceptorUI = document.createElement('div');
-  addAppUI(apiInterceptorUI);
+  addTKAppUI();
 
   // initializeEmergencyButton();
 
