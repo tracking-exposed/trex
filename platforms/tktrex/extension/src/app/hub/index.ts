@@ -52,14 +52,20 @@ function sync(hub: Hub<TKHubEvent>, config: UserSettings): void {
         userId: 'local',
       },
       (response) => {
-        hub.dispatch({
-          type: 'SyncResponse',
-          payload: response,
-        });
+        if (response.type === 'Error') {
+          hub.dispatch({
+            type: 'ErrorEvent',
+            payload: response.error,
+          });
+        } else {
+          state.content = [];
+          hub.dispatch({
+            type: 'SyncResponse',
+            payload: response,
+          });
+        }
       },
     );
-
-    state.content = [];
   }
 }
 

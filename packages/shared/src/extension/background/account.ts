@@ -87,10 +87,12 @@ export async function handleSettingsLookup(
 
   log.info(
     'Loaded experiment info from file experiment.json: %j',
-    settingsJson
+    experimentInfo
   );
 
   const settings = { ...DEFAULT_SETTINGS, ...settingsJson, ...experimentInfo };
+
+  log.info('Final settings: %j', settings);
 
   return sendResponse(settings);
 }

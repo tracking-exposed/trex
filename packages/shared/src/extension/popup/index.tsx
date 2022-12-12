@@ -1,15 +1,9 @@
 import '../../../public/font.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { createTheme, ThemeProvider } from '@material-ui/core/styles';
+import { ThemeProvider } from '@material-ui/core/styles';
 import Popup, { PopupProps } from './components/Popup';
-
-// define @mui theme for popup
-const theme = createTheme({
-  typography: {
-    fontFamily: 'Trex-Regular',
-  },
-});
+import { theme } from '../theme';
 
 /**
  * This function is responsible to render the extension popup in the proper DOM node.

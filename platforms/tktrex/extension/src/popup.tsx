@@ -6,11 +6,13 @@ import {
   AccountBox as AccountBoxIcon,
 } from '@material-ui/icons';
 import * as React from 'react';
+import hub from './app/hub';
 
 renderPopup({
   platform: 'TikTok',
   platformURL: 'https://tiktok.com',
   logo: '/tktrex-logo.png',
+  hub,
   settings: {
     enabled: {
       researchTag: true,

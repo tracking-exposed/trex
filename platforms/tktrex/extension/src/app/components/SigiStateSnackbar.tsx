@@ -1,20 +1,17 @@
-import tkHub from '../hub';
-import * as React from 'react';
 import { Snackbar } from '@material-ui/core';
-import _ from 'lodash';
+import * as React from 'react';
+import tkHub from '../hub';
 
 export const SigiStateSnackbar: React.FC = () => {
   // const [show, setShow] = React.useState(false);
   const [data, setData] = React.useState<any[]>([]);
 
   React.useEffect(() => {
-    tkHub.on(
-      'SigiState',
-      _.debounce((e) => {
-        const payload: any = e.payload;
-        setData([...data, payload]);
-      }, 400),
-    );
+    tkHub.on('SigiState', (e) => {
+      const payload: any = e.payload;
+
+      setData((data) => [...data, payload]);
+    });
   }, [data]);
 
   const handleDump = (): void => {

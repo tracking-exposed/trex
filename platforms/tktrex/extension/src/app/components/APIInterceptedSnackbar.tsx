@@ -1,7 +1,6 @@
 import Snackbar from '@mui/material/Snackbar';
-import tkHub from '../hub';
-import _ from 'lodash';
 import * as React from 'react';
+import tkHub from '../hub';
 
 export const APIInterceptedSnackbar: React.FC = () => {
   // const [show, setShow] = React.useState(false);
@@ -10,15 +9,12 @@ export const APIInterceptedSnackbar: React.FC = () => {
   });
 
   React.useEffect(() => {
-    tkHub.on(
-      'APIRequestEvent',
-      _.debounce((e) => {
-        const payload: any = e.payload;
-        if (!data.intercepted.some((ee) => ee.id === payload.id)) {
-          setData({ intercepted: [...data.intercepted, payload] });
-        }
-      }, 400),
-    );
+    tkHub.on('APIRequestEvent', (e) => {
+      const payload: any = e.payload;
+      if (!data.intercepted.some((ee) => ee.id === payload.id)) {
+        setData((data) => ({ intercepted: [...data.intercepted, payload] }));
+      }
+    });
   }, [data.intercepted]);
 
   const handleDump = (): void => {

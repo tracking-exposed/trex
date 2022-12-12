@@ -10,11 +10,12 @@ export interface ErrorModalProps {
   message: string;
   details: string[];
   position?: string[];
+  style?: React.CSSProperties;
   onClick: (action: string) => void;
 }
 
 const ErrorModal = (props: ErrorModalProps): JSX.Element => {
-  const { name, message, details, position, onClick } = props;
+  const { name, message, details, position, style, onClick } = props;
   const [detailsShown, setDetailsShown] = React.useState(false);
 
   const handleDetailsClick = (): void => {
@@ -25,7 +26,7 @@ const ErrorModal = (props: ErrorModalProps): JSX.Element => {
   };
 
   return (
-    <Box className={`ErrorModal ${position}`}>
+    <Box className={`ErrorModal ${position}`} style={style}>
       <div className="ErrorModal__container">
         <div
           className="ErrorModal__container__content"
@@ -43,8 +44,8 @@ const ErrorModal = (props: ErrorModalProps): JSX.Element => {
             })}
           >
             <ul className="ErrorModal__container__details__box__detail">
-              {details.map((d) => (
-                <li key={d}>
+              {details.map((d, i) => (
+                <li key={i}>
                   <Typography>{d}</Typography>
                 </li>
               ))}
