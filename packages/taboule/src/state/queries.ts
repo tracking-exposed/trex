@@ -187,6 +187,7 @@ export const GetTabouleQueries = ({
     ({ Query: { amount, skip, filter, ...query } }) =>
       pipe(
         YTAPI.v2.Metadata.ListMetadata({
+          ValidateOutput: false,
           Query: {
             ...query,
             amount: (amount + '') as any,
@@ -194,7 +195,7 @@ export const GetTabouleQueries = ({
             format: 'json',
             filter,
           },
-        }),
+        } as any),
         TE.map((content) => ({
           total: content.totals.home,
           content: content.data as any[] as HomeMetadata[],
