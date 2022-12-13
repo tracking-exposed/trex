@@ -1,3 +1,7 @@
+/**
+ * @module config
+ */
+
 import { Box, Typography } from '@material-ui/core';
 import { DataGridProps, GridColTypeDef } from '@mui/x-data-grid';
 import { ChannelRelated } from '@shared/models/ChannelRelated';

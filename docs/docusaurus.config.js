@@ -86,6 +86,62 @@ const config = {
         sidebarPath: require.resolve('./sidebars.js'),
       },
     ],
+    [
+      'docusaurus-plugin-typedoc',
+      {
+        id: 'shared-typedoc',
+        entryPoints: ['../packages/shared/src/index.ts'],
+        tsconfig: '../packages/shared/tsconfig.json',
+        out: 'typedoc/shared',
+        watch: process.env.TYPEDOC_WATCH,
+        sidebar: {
+          categoryLabel: '@trex/shared',
+        },
+      },
+    ],
+    [
+      'docusaurus-plugin-typedoc',
+      {
+        id: 'taboule-typedoc',
+        entryPoints: [
+          '../packages/taboule/src/index.tsx',
+          '../packages/taboule/src/state/index.ts',
+          '../packages/taboule/src/config/index.tsx',
+        ],
+        tsconfig: '../packages/taboule/tsconfig.json',
+        out: 'typedoc/taboule',
+        watch: process.env.TYPEDOC_WATCH,
+        sidebar: {
+          categoryLabel: '@taboule',
+        },
+      },
+    ],
+    [
+      'docusaurus-plugin-typedoc',
+      {
+        id: 'tk-shared-typedoc',
+        entryPoints: ['../platforms/tktrex/shared/src/index.ts'],
+        tsconfig: '../platforms/tktrex/shared/tsconfig.json',
+        out: 'typedoc/tk/shared',
+        watch: process.env.TYPEDOC_WATCH,
+        sidebar: {
+          categoryLabel: '@tktrex/shared',
+        },
+      },
+    ],
+    [
+      'docusaurus-plugin-typedoc',
+      {
+        id: 'yt-shared-typedoc',
+        entryPoints: ['../platforms/yttrex/shared/src/index.ts'],
+        tsconfig: '../platforms/yttrex/shared/tsconfig.json',
+        out: 'typedoc/yt/shared',
+        watch: process.env.TYPEDOC_WATCH,
+        sidebar: {
+          categoryLabel: '@yttrex/shared',
+        },
+      },
+    ],
   ],
   presets: [
     [
@@ -134,6 +190,28 @@ const config = {
             docId: 'yttrex-intro',
             docsPluginId: 'yttrex-docs',
             label: 'Youtube Scraper',
+          },
+          {
+            type: 'dropdown',
+            label: 'Source',
+            items: [
+              {
+                to: 'docs/typedoc/shared',
+                label: '@trex/shared',
+              },
+              {
+                to: 'docs/typedoc/taboule',
+                label: '@taboule',
+              },
+              {
+                to: 'docs/typedoc/tk/shared',
+                label: '@tktrex/shared',
+              },
+              {
+                to: 'docs/typedoc/yt/shared',
+                label: '@yttrex/shared',
+              },
+            ],
           },
           {
             type: 'dropdown',

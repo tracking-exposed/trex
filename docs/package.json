@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "docusaurus": "docusaurus",
-    "start": "docusaurus start",
+    "start": "TYPEDOC_WATCH=true docusaurus start",
     "build": "docusaurus build",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
@@ -24,9 +24,13 @@
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "2.2.0",
+    "@mxssfd/typedoc-theme": "^1.0.3",
     "@tsconfig/docusaurus": "^1.0.6",
     "docusaurus-plugin-openapi": "^0.6.3",
+    "docusaurus-plugin-typedoc": "^0.18.0",
     "docusaurus-preset-openapi": "^0.6.3",
+    "typedoc": "^0.23.22",
+    "typedoc-plugin-markdown": "^3.14.0",
     "typescript": "^4.8.4"
   },
   "browserslist": {

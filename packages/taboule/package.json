@@ -60,5 +60,11 @@
     "webpack-bundle-analyzer": "^4.6.1",
     "webpack-cli": "^4.10.0",
     "webpack-dev-server": "^4.11.1"
+  },
+  "typedoc": {
+    "entryPoint": "./src/index.tsx",
+    "readmeFile": "./README.md",
+    "displayName": "Taboule",
+    "tsconfig": "./tsconfig.json"
   }
 }

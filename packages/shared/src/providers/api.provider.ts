@@ -1,3 +1,6 @@
+/**
+ * @module apiProvider
+ */
 import { command } from 'avenger';
 import axios, {
   AxiosError,

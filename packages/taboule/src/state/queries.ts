@@ -1,3 +1,7 @@
+/**
+ * @module state!queries
+ */
+
 import * as endpoints from '@yttrex/shared/endpoints';
 import * as tkEndpoints from '@tktrex/shared/endpoints';
 import { APIError } from '@shared/errors/APIError';
@@ -31,7 +35,16 @@ export interface Results<T> {
   content: T[];
 }
 
-type EndpointQuery<C> = CachedQuery<SearchRequestInput, APIError, Results<C>>;
+/**
+ * A cached query for endpoint
+ *
+ * @typeParam C - The output
+ */
+export type EndpointQuery<C> = CachedQuery<
+  SearchRequestInput,
+  APIError,
+  Results<C>
+>;
 
 export interface TabouleQueries {
   ccRelatedUsers: EndpointQuery<ChannelRelated>;
@@ -47,7 +60,7 @@ export interface TabouleQueries {
   tikTokSearches: EndpointQuery<TKSearchMetadata>;
 }
 
-interface GetTabouleQueriesProps {
+export interface GetTabouleQueriesProps {
   baseURL: string;
   accessToken?: string;
 }
