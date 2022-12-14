@@ -5,7 +5,7 @@ import { ListMetadataQuery as TKListMetadataQuery } from '@tktrex/shared/models/
 import * as YTEndpoints from '@yttrex/shared/endpoints';
 import { ListMetadataQuery as YTListMetadataQuery } from '@yttrex/shared/models/http/metadata/query/ListMetadata.query';
 import { command } from 'avenger';
-import { APIClients } from 'config/config.type';
+import { APIClients } from '../config/config.type';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 

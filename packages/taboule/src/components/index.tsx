@@ -1,4 +1,4 @@
-import { TabouleConfiguration } from 'config';
+import { TabouleConfiguration } from '../config';
 import React from 'react';
 import { TabbedTaboule } from './TabbedTaboule';
 import { Taboule, TabouleProps } from './Taboule';
