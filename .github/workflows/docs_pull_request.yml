@@ -1,4 +1,4 @@
-name: TRex - Release "daily"
+name: TRex - Docs
 
 on:
   push:
@@ -37,9 +37,6 @@ jobs:
 
       - name: Install dependencies
         run: yarn
-
-      # - name: Test project
-      #   run: yarn test
 
       - name: Build Docs
         env:
