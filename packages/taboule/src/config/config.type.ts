@@ -10,6 +10,13 @@ export interface TabouleColumnProps<K> extends Omit<GridColTypeDef, 'field'> {
   field: K | 'actions';
 }
 
+/**
+ * The Taboule query configuration object
+ *
+ * @typeParam P - the data type to handle
+ * @typeParam I - the input type for query
+ * @typeParam O - the output object
+ */
 export interface TabouleQueryConfiguration<
   P extends Record<string, any>,
   I extends {},
@@ -23,17 +30,26 @@ export interface TabouleQueryConfiguration<
   query: EndpointQuery<I, O>;
 }
 
+/**
+ * API Clients for our backends
+ */
 export interface APIClients {
   TK: APIClient<typeof tkEndpoints>;
   YT: APIClient<typeof ytEndpoints>;
 }
 
+export interface GetTabouleQueryConfOpts {
+  clients: APIClients;
+  commands: TabouleCommands;
+  params: any;
+}
+
+/**
+ * Get taboule query configuration.
+ *
+ */
 export type GetTabouleQueryConf<
   P extends Record<string, any>,
   I extends {},
   O = Results<P>
-> = (opts: {
-  clients: APIClients;
-  commands: TabouleCommands;
-  params: any;
-}) => TabouleQueryConfiguration<P, I, O>;
+> = (opts: GetTabouleQueryConfOpts) => TabouleQueryConfiguration<P, I, O>;

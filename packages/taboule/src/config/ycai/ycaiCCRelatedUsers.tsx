@@ -12,6 +12,22 @@ type QueryInput = Omit<SearchRequestInput, 'Params'> & {
   Params: { channelId: string };
 };
 
+/**
+ * YCAI Related users taboule query configuration
+ *
+ * Columns:
+ *  - id
+ *  - recommendedSource
+ *  - percentage
+ *  - recommendedChannelCount
+ *  - savingTime
+ *  - experimentId
+ *  - researchTag
+ 
+ *
+ * @param opts - Taboule query options {@link GetTabouleQueryConfOpts}
+ * @returns taboule query configuration for YCAI related users
+ */
 export const YCAIccRelatedUsers: GetTabouleQueryConf<
   ChannelRelated,
   QueryInput

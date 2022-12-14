@@ -17,6 +17,26 @@ import {
 } from '../defaults';
 import * as inputs from '../inputs';
 
+/**
+ * YouTube Personal Home taboule query configuration
+ *
+ * Columns:
+ *  - id
+ *  - selected
+ *  - login
+ *  - sections
+ *  - savingTime
+ *  - experimentId
+ *  - researchTag
+ * Expand:
+ *  - selected
+ * Actions:
+ *  - download csv
+ *
+ * @param opts - Taboule query options {@link GetTabouleQueryConfOpts}
+ * @returns taboule query configuration for youtube personal "home"
+ */
+
 export const youtubePersonalHomes: GetTabouleQueryConf<
   HomeMetadata,
   ListMetadataRequestInput

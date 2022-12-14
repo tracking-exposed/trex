@@ -18,6 +18,26 @@ import {
 import { getApplyFilterFnIncluded } from '../filters';
 import * as inputs from '../inputs';
 
+/**
+ * YouTube Personal Video taboule query configuration
+ *
+ * Columns:
+ *  - id
+ *  - title
+ *  - authorName
+ *  - viewInfo
+ *  - related
+ *  - savingTime
+ *  - experimentId
+ *  - researchTag
+ * Expand:
+ *  - related
+ * Actions:
+ *  - download csv
+ *
+ * @param opts - Taboule query options {@link GetTabouleQueryConfOpts}
+ * @returns taboule query configuration for youtube personal "video"
+ */
 export const youtubePersonalVideos: GetTabouleQueryConf<
   YTVideoMetadata,
   ListMetadataRequestInput
@@ -43,7 +63,7 @@ export const youtubePersonalVideos: GetTabouleQueryConf<
               title: undefined,
               authorName: undefined,
               ...filter,
-              nature: 'video',
+              nature: VideoNatureType.value,
             },
           },
         } as any),

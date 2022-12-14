@@ -1,5 +1,4 @@
 import { Box } from '@mui/material';
-import { APIError } from '@shared/errors/APIError';
 import { ProfileMetadata } from '@tktrex/shared/models/metadata';
 import { ProfileType } from '@tktrex/shared/models/Nature';
 import { available, queryStrict } from 'avenger';
@@ -7,8 +6,7 @@ import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/TaskEither';
 import * as React from 'react';
 import CSVDownloadButton from '../../components/buttons/CSVDownloadButton';
-import * as cells from '../../components/gridCells';
-import { ListMetadataRequestInput, Results } from '../../state/queries';
+import { ListMetadataRequestInput } from '../../state/queries';
 import { GetTabouleQueryConf } from '../config.type';
 import {
   columnDefault,
@@ -17,6 +15,22 @@ import {
 } from '../defaults';
 import * as inputs from '../inputs';
 
+/**
+ * TikTok Personal Profile taboule query configuration
+ *
+ * Columns:
+ *  - id
+ *  - results
+ *  - savingTime
+ *  - experimentId
+ *  - researchTag
+ *
+ * Actions:
+ *  - download csv
+ *
+ * @param opts - Taboule query options {@link GetTabouleQueryConfOpts}
+ * @returns taboule query configuration for tiktok personal "profile" pages
+ */
 export const tikTokPersonalProfile: GetTabouleQueryConf<
   ProfileMetadata,
   ListMetadataRequestInput
@@ -25,11 +39,7 @@ export const tikTokPersonalProfile: GetTabouleQueryConf<
     nature: ProfileType.value,
   },
   inputs: inputs.publicKeyInput,
-  query: queryStrict<
-    ListMetadataRequestInput,
-    APIError,
-    Results<ProfileMetadata>
-  >(
+  query: queryStrict(
     ({ Query: { filter, ...query } }) =>
       pipe(
         clients.TK.v2.Metadata.ListMetadata({
@@ -69,12 +79,6 @@ export const tikTokPersonalProfile: GetTabouleQueryConf<
   },
   columns: [
     ...fieldsDefaultHead,
-    {
-      ...columnDefault,
-      field: 'savingTime',
-      headerName: 'when',
-      renderCell: cells.distanceFromNowCell,
-    },
     // {
     //   ...columnDefault,
     //   field: 'rejected',

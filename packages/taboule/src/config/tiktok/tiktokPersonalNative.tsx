@@ -15,6 +15,24 @@ import {
 } from '../defaults';
 import * as inputs from '../inputs';
 
+/**
+ * TikTok Personal Native taboule query configuration
+ *
+ * Columns:
+ *  - id
+ *  - authorId
+ *  - videoId
+ *  - description
+ *  - hashtags
+ *  - savingTime
+ *  - experimentId
+ *  - researchTag
+ * Actions:
+ *  - download csv
+ *
+ * @param opts - Taboule query options {@link GetTabouleQueryConfOpts}
+ * @returns taboule query configuration for tiktok personal "native" videos
+ */
 export const tikTokPersonalNative: GetTabouleQueryConf<
   NativeMetadata,
   ListMetadataRequestInput,

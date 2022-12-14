@@ -9,6 +9,23 @@ import { SearchRequestInput } from '../../state/queries';
 import { GetTabouleQueryConf } from '../config.type';
 import { columnDefault } from '../defaults';
 
+/**
+ * YouTube Experiment List taboule query configuration
+ *
+ * Columns:
+ *  - id
+ *  - experimentId
+ *  - when
+ *  - steps
+ *  - savingTime
+ *  - experimentId
+ *  - researchTag
+ * Actions:
+ *  - download csv
+ *
+ * @param opts - Taboule query options {@link GetTabouleQueryConfOpts}
+ * @returns taboule query configuration for youtube experiments (guardoni)
+ */
 export const youtubeGetExperimentList: GetTabouleQueryConf<
   GuardoniExperiment,
   SearchRequestInput

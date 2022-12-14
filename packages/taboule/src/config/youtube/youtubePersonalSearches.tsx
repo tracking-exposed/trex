@@ -17,6 +17,24 @@ import {
 import { getApplyFilterFnIncluded } from '../filters';
 import * as inputs from '../inputs';
 
+/**
+ * YouTube Personal Search taboule query configuration
+ *
+ * Columns:
+ *  - id
+ *  - query
+ *  - results
+ *  - savingTime
+ *  - experimentId
+ *  - researchTag
+ * Expand:
+ *  - selected
+ * Actions:
+ *  - download csv
+ *
+ * @param opts - Taboule query options {@link GetTabouleQueryConfOpts}
+ * @returns taboule query configuration for youtube personal "home"
+ */
 export const youtubePersonalSearches: GetTabouleQueryConf<
   SearchMetadata,
   ListMetadataRequestInput
@@ -62,7 +80,7 @@ export const youtubePersonalSearches: GetTabouleQueryConf<
                 experimentId: params.experimentId,
                 filter: {
                   ...filter,
-                  nature: 'search',
+                  nature: SearchNatureType.value,
                 },
               },
             })();

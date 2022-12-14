@@ -10,6 +10,20 @@ import { GetTabouleQueryConf } from '../config.type';
 import { fieldsDefaultHead, fieldsDefaultTail } from '../defaults';
 import * as inputs from '../inputs';
 
+/**
+ * YouTube Personal Stats taboule query configuration
+ *
+ * Columns:
+ *  - id
+ *  - savingTime
+ *  - experimentId
+ *  - researchTag
+ * Actions:
+ *  - download csv
+ *
+ * @param opts - Taboule query options {@link GetTabouleQueryConfOpts}
+ * @returns taboule query configuration for youtube personal stats
+ */
 export const youtubePersonalStats: GetTabouleQueryConf<
   any,
   RequestInputWithPublicKeyParam

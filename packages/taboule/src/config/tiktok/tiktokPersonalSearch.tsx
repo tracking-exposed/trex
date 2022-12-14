@@ -1,13 +1,13 @@
 import { Box } from '@mui/material';
-import { APIError } from '@shared/errors/APIError';
 import { SearchMetadata } from '@tktrex/shared/models/metadata';
 import { SearchType } from '@tktrex/shared/models/Nature';
 import { SearchNatureType } from '@yttrex/shared/models/Nature';
 import { available, queryStrict } from 'avenger';
 import { pipe } from 'fp-ts/lib/function';
+import * as TE from 'fp-ts/TaskEither';
 import * as React from 'react';
 import CSVDownloadButton from '../../components/buttons/CSVDownloadButton';
-import { ListMetadataRequestInput, Results } from '../../state/queries';
+import { ListMetadataRequestInput } from '../../state/queries';
 import { GetTabouleQueryConf } from '../config.type';
 import {
   columnDefault,
@@ -15,8 +15,25 @@ import {
   fieldsDefaultTail,
 } from '../defaults';
 import * as inputs from '../inputs';
-import * as TE from 'fp-ts/TaskEither';
 
+/**
+ * TikTok Personal Search taboule query configuration
+ *
+ * Columns:
+ *  - id
+ *  - query
+ *  - results
+ *  - savingTime
+ *  - experimentId
+ *  - researchTag
+ * Expand:
+ *  - results
+ * Actions:
+ *  - download csv
+ *
+ * @param opts - Taboule query options {@link GetTabouleQueryConfOpts}
+ * @returns taboule query configuration for tiktok personal "search"
+ */
 export const tikTokPersonalSearch: GetTabouleQueryConf<
   SearchMetadata,
   ListMetadataRequestInput
@@ -25,11 +42,7 @@ export const tikTokPersonalSearch: GetTabouleQueryConf<
     nature: SearchType.value,
   },
   inputs: inputs.publicKeyInput,
-  query: queryStrict<
-    ListMetadataRequestInput,
-    APIError,
-    Results<SearchMetadata>
-  >(
+  query: queryStrict(
     ({ Query: { amount, skip, filter, ...query } }) =>
       pipe(
         clients.TK.v2.Metadata.ListMetadata({

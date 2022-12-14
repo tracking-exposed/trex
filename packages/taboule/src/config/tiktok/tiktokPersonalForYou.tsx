@@ -1,11 +1,15 @@
+import CommentIcon from '@mui/icons-material/CommentOutlined';
 import ShareIcon from '@mui/icons-material/ShareOutlined';
 import LikeIcon from '@mui/icons-material/ThumbUpOutlined';
-import CommentIcon from '@mui/icons-material/CommentOutlined';
 import { Box } from '@mui/material';
 import { ForYouMetadata } from '@tktrex/shared/models/metadata';
 import { ForYouType } from '@tktrex/shared/models/Nature';
+import { available, queryStrict } from 'avenger';
+import { pipe } from 'fp-ts/lib/function';
+import * as TE from 'fp-ts/TaskEither';
 import * as React from 'react';
 import CSVDownloadButton from '../../components/buttons/CSVDownloadButton';
+import { ListMetadataRequestInput } from '../../state/queries';
 import { GetTabouleQueryConf } from '../config.type';
 import {
   columnDefault,
@@ -13,12 +17,23 @@ import {
   fieldsDefaultTail,
 } from '../defaults';
 import * as inputs from '../inputs';
-import { ListMetadataRequestInput, Results } from '../../state/queries';
-import { queryStrict, available } from 'avenger';
-import { APIError } from '@shared/errors/APIError';
-import { pipe } from 'fp-ts/lib/function';
-import * as TE from 'fp-ts/TaskEither';
 
+/**
+ * TikTok Personal For You taboule query configuration
+ *
+ * Columns:
+ *  - id
+ *  - author
+ *  - description
+ *  - hashtags
+ *  - metrics
+ *  - savingTime
+ *  - experimentId
+ *  - researchTag
+ *
+ * @param opts - Taboule query options {@link GetTabouleQueryConfOpts}
+ * @returns taboule query configuration for tiktok personal "foryou" page
+ */
 export const tikTokPersonalForYou: GetTabouleQueryConf<
   ForYouMetadata,
   ListMetadataRequestInput
@@ -27,11 +42,7 @@ export const tikTokPersonalForYou: GetTabouleQueryConf<
     nature: ForYouType.value,
   },
   inputs: inputs.publicKeyInput,
-  query: queryStrict<
-    ListMetadataRequestInput,
-    APIError,
-    Results<ForYouMetadata>
-  >(
+  query: queryStrict(
     ({ Query: { filter, ...query } }) =>
       pipe(
         clients.TK.v2.Metadata.ListMetadata({
@@ -39,7 +50,6 @@ export const tikTokPersonalForYou: GetTabouleQueryConf<
           Query: {
             ...query,
             filter: {
-              description: undefined,
               ...filter,
               nature: ForYouType.value,
             },
