@@ -228,6 +228,7 @@ export const GetTabouleQueries = ({
     ({ Query: { filter, ...query } }) =>
       pipe(
         YTAPI.v2.Metadata.ListMetadata({
+          ValidateOutput: false,
           Query: {
             ...query,
             format: 'json',
@@ -238,7 +239,7 @@ export const GetTabouleQueries = ({
               nature: 'video',
             },
           },
-        }),
+        } as any),
         TE.map((content) => ({
           total: content.totals.video,
           content: content.data as any[] as VideoMetadata[],
@@ -281,6 +282,7 @@ export const GetTabouleQueries = ({
     ({ Query: { amount, skip, filter, ...query } }) =>
       pipe(
         TK_API.v2.Metadata.ListMetadata({
+          ValidateOutput: false,
           Query: {
             ...query,
             amount,
@@ -291,7 +293,7 @@ export const GetTabouleQueries = ({
               nature: SearchType.value,
             },
           },
-        }),
+        } as any),
         TE.map((content) => ({
           total: content.totals.search,
           content: content.data as any[] as TKSearchMetadata[],
@@ -359,6 +361,7 @@ export const GetTabouleQueries = ({
     ({ Query: { filter, ...query } }) =>
       pipe(
         TK_API.v2.Metadata.ListMetadata({
+          ValidateOutput: false,
           Query: {
             ...query,
             filter: {
@@ -367,7 +370,7 @@ export const GetTabouleQueries = ({
               nature: ForYouType.value,
             },
           },
-        }),
+        } as any),
         TE.map((content) => ({
           total: content.totals.native,
           content: content.data as any[] as TKForYouMetadata[],

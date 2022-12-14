@@ -112,5 +112,10 @@ export const AllTKPersonal = Template.bind({});
 AllTKPersonal.args = {
   showInput: true,
   baseURL: tkBaseURL,
-  queries: [tkPersonalForYouQ, tkPersonalNative, tkPersonalProfileQ],
+  queries: [
+    tkPersonalForYouQ,
+    tkPersonalNative,
+    tkPersonalSearchQ,
+    tkPersonalProfileQ,
+  ],
 };

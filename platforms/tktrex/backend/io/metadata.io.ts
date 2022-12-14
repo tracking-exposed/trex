@@ -8,7 +8,7 @@ import {
   NativeMetadata,
   ProfileMetadata,
   SearchMetadata,
-  TKMetadata
+  TKMetadata,
 } from '@tktrex/shared/models/metadata';
 import { TKMetadataBase as MetadataBase } from '@tktrex/shared/models/metadata/MetadataBase';
 import {
@@ -18,7 +18,7 @@ import {
   HashtagType,
   NativeType,
   ProfileType,
-  SearchType
+  SearchType,
 } from '@tktrex/shared/models/Nature';
 import * as E from 'fp-ts/Either';
 import { pipe } from 'fp-ts/function';
@@ -29,7 +29,7 @@ import {
   NativeMetadataDB,
   ProfileMetadataDB,
   SearchMetadataDB,
-  TKMetadataDB
+  TKMetadataDB,
 } from '../models/metadata';
 
 type SpecificM<M> = Omit<M, keyof Metadata | '_id' | 'publicKey'>;
@@ -172,10 +172,11 @@ export const toTKMetadata = ({
 
   // we cheat the compiler by setting `m` type to `any` for the switch;
   const mm: any = m;
+  const type: typeof m.type = m.nature?.type ?? m.type;
 
   // based on the metadata nature type we extract
   // the metadata values by a proper mapping function
-  switch (m.nature.type) {
+  switch (type) {
     case SearchType.value: {
       return toSearchMetadata(mm, meta);
     }

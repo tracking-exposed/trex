@@ -56,7 +56,7 @@ export const tikTokPersonalSearch: GetTabouleQueryConf<SearchMetadata> = (
       ...columnDefault,
       field: 'results',
       renderCell: (params) => {
-        return <span>{params.row.results.length}</span>;
+        return <span>{(params.row.results ?? []).length}</span>;
       },
       width: 40,
     },

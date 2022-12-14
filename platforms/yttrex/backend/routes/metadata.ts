@@ -1,8 +1,8 @@
 import * as endpoints from '@shared/endpoints/helper';
+import { GetLogger } from '@shared/logger';
 import { v2 } from '@yttrex/shared/endpoints';
 import { ListMetadataResponse } from '@yttrex/shared/models/http/metadata/output/ListMetadata.output';
 import { ListMetadataQuery } from '@yttrex/shared/models/http/metadata/query/ListMetadata.query';
-import D from 'debug';
 import * as express from 'express';
 import _ from 'lodash';
 import moment from 'moment';
@@ -10,7 +10,7 @@ import automo from '../lib/automo';
 import CSV from '../lib/CSV';
 import * as utils from '../lib/utils';
 
-const debug = D('routes:metadata');
+const metadataLogger = GetLogger('routes:metadata');
 
 // This variables is used as cap in every readLimit below
 const PUBLIC_AMOUNT_ELEMS = 100;
@@ -23,7 +23,7 @@ const listMetadata = async (
     req
   ) as any as { query: ListMetadataQuery };
 
-  debug('Build metadata filter from query %O', query);
+  metadataLogger.debug('Build metadata filter from query %O', query);
 
   const {
     publicKey,
@@ -85,7 +85,7 @@ const listMetadata = async (
     filter.researchTag = researchTag;
   }
 
-  debug('Filtering metadata with %O (%d, %d)', filter, amount, skip);
+  metadataLogger.debug('Filtering metadata with %O (%d, %d)', filter, amount, skip);
 
   const metadata = await automo
     .getMetadataByFilter(filter, {
@@ -101,14 +101,14 @@ const listMetadata = async (
             id: id.substring(0, 20),
             researchTag: m.researchTag ?? undefined,
             experimentId: m.experimentId ?? undefined,
-            savingTime: m.savingTime.toISOString(),
-            clientTime: m.clientTime.toISOString(),
+            savingTime: m.savingTime?.toISOString(),
+            clientTime: m.clientTime?.toISOString(),
             supporter: utils.string2Food(publicKey),
           } as any)
       ),
     }));
 
-  debug(
+  metadataLogger.debug(
     'Returning %d evidences of %j available',
     _.size(metadata.data),
     metadata.totals
@@ -121,7 +121,7 @@ const listMetadata = async (
     filename += researchTag ? `-research_tag-${researchTag}` : '';
     filename += '-' + moment().format('YY-MM-DD') + '.csv';
 
-    debug('VideoCSV: produced %d bytes, returning %s', _.size(csv), filename);
+    metadataLogger.debug('VideoCSV: produced %d bytes, returning %s', _.size(csv), filename);
 
     // if (!_.size(csv)) return { text: 'Error, Zorry: 🤷' };
 
