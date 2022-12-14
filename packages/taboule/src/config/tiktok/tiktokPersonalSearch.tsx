@@ -52,9 +52,7 @@ export const tikTokPersonalSearch: GetTabouleQueryConf<
             amount,
             skip,
             filter: {
-              query: undefined,
               ...filter,
-              nature: SearchType.value,
             },
           },
         } as any),

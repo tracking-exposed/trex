@@ -58,12 +58,8 @@ export const youtubePersonalVideos: GetTabouleQueryConf<
           ValidateOutput: false,
           Query: {
             ...query,
-            format: 'json',
             filter: {
-              title: undefined,
-              authorName: undefined,
-              ...filter,
-              nature: VideoNatureType.value,
+              ...(filter as any),
             },
           },
         } as any),

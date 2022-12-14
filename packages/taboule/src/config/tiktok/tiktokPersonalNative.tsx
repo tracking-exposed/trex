@@ -51,11 +51,7 @@ export const tikTokPersonalNative: GetTabouleQueryConf<
             ...query,
             amount,
             skip,
-            filter: {
-              description: undefined,
-              ...filter,
-              nature: NativeType.value,
-            },
+            filter,
           },
         } as any),
         TE.map((content) => ({

@@ -54,11 +54,8 @@ export const youtubePersonalSearches: GetTabouleQueryConf<
         clients.YT.v2.Metadata.ListMetadata({
           Query: {
             ...query,
-            format: 'json',
             filter: {
-              query: undefined,
-              ...filter,
-              nature: 'search',
+              ...(filter as any),
             },
           },
         }),

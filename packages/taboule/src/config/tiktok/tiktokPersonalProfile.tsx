@@ -46,8 +46,7 @@ export const tikTokPersonalProfile: GetTabouleQueryConf<
           Query: {
             ...query,
             filter: {
-              ...filter,
-              nature: ProfileType.value,
+              ...(filter as any),
             },
           },
         }),

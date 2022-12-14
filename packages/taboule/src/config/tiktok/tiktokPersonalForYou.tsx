@@ -49,10 +49,7 @@ export const tikTokPersonalForYou: GetTabouleQueryConf<
           ValidateOutput: false,
           Query: {
             ...query,
-            filter: {
-              ...filter,
-              nature: ForYouType.value,
-            },
+            filter,
           },
         } as any),
         TE.map((content) => ({

@@ -60,7 +60,9 @@ export const youtubePersonalHomes: GetTabouleQueryConf<
             amount: (amount + '') as any,
             skip: (skip + '') as any,
             format: 'json',
-            filter,
+            filter: {
+              ...(filter as any),
+            },
           },
         } as any),
         TE.map((content) => ({
