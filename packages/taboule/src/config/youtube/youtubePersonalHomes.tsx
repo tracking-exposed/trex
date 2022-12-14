@@ -1,12 +1,15 @@
 import { Box } from '@mui/material';
 import { HomeMetadata } from '@yttrex/shared/models/metadata/HomeMetadata';
 import { HomeNatureType } from '@yttrex/shared/models/Nature';
-import CSVDownloadButton from '../../components/buttons/CSVDownloadButton';
+import { available, queryStrict } from 'avenger';
+import { pipe } from 'fp-ts/lib/function';
+import * as TE from 'fp-ts/lib/TaskEither';
 import * as React from 'react';
+import CSVDownloadButton from '../../components/buttons/CSVDownloadButton';
 import ExpandView from '../../components/expand-view/ExpandView';
 import { ParsedInfoList } from '../../components/list/ParsedInfoList';
-import { TabouleCommands } from '../../state/commands';
-import { TabouleQueryConfiguration } from '../config.type';
+import { ListMetadataRequestInput } from '../../state/queries';
+import { GetTabouleQueryConf } from '../config.type';
 import {
   columnDefault,
   fieldsDefaultHead,
@@ -14,15 +17,38 @@ import {
 } from '../defaults';
 import * as inputs from '../inputs';
 
-export const youtubePersonalHomes = (
-  commands: TabouleCommands,
-  params: any
-): TabouleQueryConfiguration<HomeMetadata> => ({
+export const youtubePersonalHomes: GetTabouleQueryConf<
+  HomeMetadata,
+  ListMetadataRequestInput
+> = ({ clients, commands, params }) => ({
   inputs: (params, setParams) => (
     <div>
       {inputs.publicKeyInput(params, setParams)}
       {inputs.experimentIdInput(params, setParams)}
     </div>
+  ),
+  filters: {
+    nature: HomeNatureType.value,
+  },
+  query: queryStrict(
+    ({ Query: { amount, skip, filter, ...query } }) =>
+      pipe(
+        clients.YT.v2.Metadata.ListMetadata({
+          ValidateOutput: false,
+          Query: {
+            ...query,
+            amount: (amount + '') as any,
+            skip: (skip + '') as any,
+            format: 'json',
+            filter,
+          },
+        } as any),
+        TE.map((content) => ({
+          total: content.totals.home,
+          content: content.data as any[] as HomeMetadata[],
+        }))
+      ),
+    available
   ),
   actions: ({ filter, ...params }) => {
     return (
@@ -45,9 +71,7 @@ export const youtubePersonalHomes = (
       </Box>
     );
   },
-  filters: {
-    nature: HomeNatureType.value,
-  },
+
   expanded: ({ row, ...props }) => {
     return (
       <ExpandView {...props}>

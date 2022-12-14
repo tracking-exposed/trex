@@ -1,9 +1,13 @@
 import { Box } from '@mui/material';
 import { SearchMetadata } from '@yttrex/shared/models/metadata/Metadata';
 import { SearchNatureType } from '@yttrex/shared/models/Nature';
-import ExpandView from '../../components/expand-view/ExpandView';
+import { queryStrict, refetch } from 'avenger';
+import { pipe } from 'fp-ts/lib/function';
+import * as TE from 'fp-ts/TaskEither';
 import * as React from 'react';
 import CSVDownloadButton from '../../components/buttons/CSVDownloadButton';
+import ExpandView from '../../components/expand-view/ExpandView';
+import { ListMetadataRequestInput } from '../../state/queries';
 import { GetTabouleQueryConf } from '../config.type';
 import {
   columnDefault,
@@ -13,10 +17,10 @@ import {
 import { getApplyFilterFnIncluded } from '../filters';
 import * as inputs from '../inputs';
 
-export const youtubePersonalSearches: GetTabouleQueryConf<SearchMetadata> = (
-  commands,
-  params
-) => ({
+export const youtubePersonalSearches: GetTabouleQueryConf<
+  SearchMetadata,
+  ListMetadataRequestInput
+> = ({ clients, commands, params }) => ({
   filters: {
     nature: SearchNatureType.value,
   },
@@ -25,6 +29,27 @@ export const youtubePersonalSearches: GetTabouleQueryConf<SearchMetadata> = (
       {inputs.publicKeyInput(params, setParams)}
       {inputs.experimentIdInput(params, setParams)}
     </div>
+  ),
+  query: queryStrict(
+    ({ Query: { filter, ...query } }) =>
+      pipe(
+        clients.YT.v2.Metadata.ListMetadata({
+          Query: {
+            ...query,
+            format: 'json',
+            filter: {
+              query: undefined,
+              ...filter,
+              nature: 'search',
+            },
+          },
+        }),
+        TE.map((content) => ({
+          total: content.totals.search,
+          content: content.data as any[] as SearchMetadata[],
+        }))
+      ),
+    refetch
   ),
   actions: (filter) => {
     return (

@@ -1,23 +1,27 @@
 import { Box } from '@mui/material';
 import { VideoMetadata as YTVideoMetadata } from '@yttrex/shared/models/metadata/Metadata';
+import { VideoNatureType } from '@yttrex/shared/models/Nature';
+import { queryStrict, refetch } from 'avenger';
+import { pipe } from 'fp-ts/lib/function';
+import * as TE from 'fp-ts/TaskEither';
 import * as React from 'react';
 import CSVDownloadButton from '../../components/buttons/CSVDownloadButton';
+import ExpandView from '../../components/expand-view/ExpandView';
+import { ParsedInfoList } from '../../components/list/ParsedInfoList';
+import { ListMetadataRequestInput } from '../../state/queries';
 import { GetTabouleQueryConf } from '../config.type';
 import {
   columnDefault,
   fieldsDefaultHead,
   fieldsDefaultTail,
 } from '../defaults';
-import * as inputs from '../inputs';
 import { getApplyFilterFnIncluded } from '../filters';
-import { VideoNatureType } from '@yttrex/shared/models/Nature';
-import ExpandView from '../../components/expand-view/ExpandView';
-import { ParsedInfoList } from '../../components/list/ParsedInfoList';
+import * as inputs from '../inputs';
 
-export const youtubePersonalVideos: GetTabouleQueryConf<YTVideoMetadata> = (
-  commands,
-  params
-) => ({
+export const youtubePersonalVideos: GetTabouleQueryConf<
+  YTVideoMetadata,
+  ListMetadataRequestInput
+> = ({ clients, commands, params }) => ({
   filters: {
     nature: VideoNatureType.value,
   },
@@ -26,6 +30,29 @@ export const youtubePersonalVideos: GetTabouleQueryConf<YTVideoMetadata> = (
       {inputs.publicKeyInput(params, setParams)}
       {inputs.experimentIdInput(params, setParams)}
     </div>
+  ),
+  query: queryStrict(
+    ({ Query: { filter, ...query } }) =>
+      pipe(
+        clients.YT.v2.Metadata.ListMetadata({
+          ValidateOutput: false,
+          Query: {
+            ...query,
+            format: 'json',
+            filter: {
+              title: undefined,
+              authorName: undefined,
+              ...filter,
+              nature: 'video',
+            },
+          },
+        } as any),
+        TE.map((content) => ({
+          total: content.totals.video,
+          content: content.data as any[] as YTVideoMetadata[],
+        }))
+      ),
+    refetch
   ),
   expanded({ row, ...props }) {
     return (

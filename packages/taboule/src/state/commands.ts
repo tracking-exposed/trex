@@ -1,13 +1,13 @@
-import { MakeAPIClient, TERequest } from '@shared/providers/api.provider';
-import { command } from 'avenger';
-import * as YTEndpoints from '@yttrex/shared/endpoints';
+import { APIError } from '@shared/errors/APIError';
+import { TERequest } from '@shared/providers/api.provider';
 import * as TKEndpoints from '@tktrex/shared/endpoints';
-import { TabouleQueries } from './queries';
+import { ListMetadataQuery as TKListMetadataQuery } from '@tktrex/shared/models/http/query/ListMetadata.query';
+import * as YTEndpoints from '@yttrex/shared/endpoints';
+import { ListMetadataQuery as YTListMetadataQuery } from '@yttrex/shared/models/http/metadata/query/ListMetadata.query';
+import { command } from 'avenger';
+import { APIClients } from 'config/config.type';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { APIError } from '@shared/errors/APIError';
-import { ListMetadataQuery as TKListMetadataQuery } from '@tktrex/shared/models/http/query/ListMetadata.query';
-import { ListMetadataQuery as YTListMetadataQuery } from '@yttrex/shared/models/http/metadata/query/ListMetadata.query';
 
 const downloadFile = (filename: string, content: string): void => {
   const aElement = document.createElement('a');
@@ -41,43 +41,15 @@ export interface TabouleCommands {
   >;
 }
 
-export const GetTabouleCommands = (
-  {
-    baseURL,
-  }: {
-    baseURL: string;
-  },
-  queries: TabouleQueries
-): TabouleCommands => {
-  const YTAPI = MakeAPIClient(
-    {
-      baseURL,
-      getAuth: async (req) => req,
-      onUnauthorized: async (res) => res,
-    },
-    YTEndpoints
-  );
-
-  const TKAPI = MakeAPIClient(
-    {
-      baseURL,
-      getAuth: async (req) => req,
-      onUnauthorized: async (res) => res,
-    },
-    TKEndpoints
-  );
-
+export const GetTabouleCommands = (clients: APIClients): TabouleCommands => {
   const deleteContribution = command(
     (input: { Params: { publicKey: string; selector: string | undefined } }) =>
-      YTAPI.API.v2.Public.DeletePersonalContributionByPublicKey({
+      clients.YT.v2.Public.DeletePersonalContributionByPublicKey({
         Params: {
           ...input.Params,
           selector: 'undefined',
         },
-      }),
-    {
-      youtubePersonalSearches: queries.youtubePersonalSearches,
-    }
+      })
   );
 
   const ytDownloadAsCSV = command<
@@ -86,7 +58,7 @@ export const GetTabouleCommands = (
     undefined
   >(({ Query: { filter, ...query } }) =>
     pipe(
-      YTAPI.API.v2.Metadata.ListMetadata({
+      clients.YT.v2.Metadata.ListMetadata({
         ValidateOutput: false,
         Query: {
           ...query,
@@ -108,7 +80,7 @@ export const GetTabouleCommands = (
     undefined
   >(({ Query: { filter, ...query } }) =>
     pipe(
-      TKAPI.API.v2.Metadata.ListMetadata({
+      clients.TK.v2.Metadata.ListMetadata({
         Query: {
           ...query,
           amount: 10000,
@@ -126,7 +98,7 @@ export const GetTabouleCommands = (
   const downloadSearchesAsCSV = command(
     (input: { Params: { queryString: string } }) =>
       pipe(
-        YTAPI.API.v2.Public.SearchesAsCSV({
+        clients.YT.v2.Public.SearchesAsCSV({
           Params: input.Params,
         }),
         TE.map((content) => {

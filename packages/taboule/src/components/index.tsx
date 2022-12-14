@@ -1,14 +1,14 @@
+import { TabouleConfiguration } from 'config';
 import React from 'react';
-import { TabouleQueries } from '../state/queries';
 import { TabbedTaboule } from './TabbedTaboule';
 import { Taboule, TabouleProps } from './Taboule';
 
-export interface TabouleIndexProps<Q extends keyof TabouleQueries>
+export interface TabouleIndexProps<Q extends keyof TabouleConfiguration>
   extends Omit<TabouleProps<Q>, 'query'> {
   queries?: Array<{ value: Q; label: string }>;
 }
 
-export const TabouleIndex = <Q extends keyof TabouleQueries>({
+export const TabouleIndex = <Q extends keyof TabouleConfiguration>({
   queries,
   ...props
 }: TabouleIndexProps<Q>): JSX.Element => {

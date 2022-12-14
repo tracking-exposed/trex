@@ -2,11 +2,11 @@ import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import * as React from 'react';
-import { TabouleQueries } from '../state/queries';
+import * as config from '../config';
 import { Taboule, TabouleProps } from './Taboule';
 import { a11yProps, TabPanel } from './TabPanel';
 
-interface TabbedTabouleProps<Q extends keyof TabouleQueries>
+interface TabbedTabouleProps<Q extends keyof config.TabouleConfiguration>
   extends Omit<TabouleProps<Q>, 'query'> {
   queries: Array<{
     label: string;
@@ -15,7 +15,7 @@ interface TabbedTabouleProps<Q extends keyof TabouleQueries>
 }
 
 export const TabbedTaboule: React.FC<
-  TabbedTabouleProps<keyof TabouleQueries>
+  TabbedTabouleProps<keyof config.TabouleConfiguration>
 > = ({ queries: tabs, ...props }) => {
   const [value, setValue] = React.useState(0);
 

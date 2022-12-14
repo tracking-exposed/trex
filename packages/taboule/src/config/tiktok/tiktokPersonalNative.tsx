@@ -1,8 +1,12 @@
 import { Box } from '@mui/material';
 import { NativeMetadata } from '@tktrex/shared/models/metadata';
 import { NativeType } from '@tktrex/shared/models/Nature';
-import CSVDownloadButton from '../../components/buttons/CSVDownloadButton';
+import { available, queryStrict } from 'avenger';
+import { pipe } from 'fp-ts/lib/function';
+import * as TE from 'fp-ts/lib/TaskEither';
 import * as React from 'react';
+import { ListMetadataRequestInput } from '../../state/queries';
+import CSVDownloadButton from '../../components/buttons/CSVDownloadButton';
 import { GetTabouleQueryConf } from '../config.type';
 import {
   columnDefault,
@@ -11,14 +15,41 @@ import {
 } from '../defaults';
 import * as inputs from '../inputs';
 
-export const tikTokPersonalNative: GetTabouleQueryConf<NativeMetadata> = (
-  commands,
-  params
-) => ({
+export const tikTokPersonalNative: GetTabouleQueryConf<
+  NativeMetadata,
+  ListMetadataRequestInput,
+  { total: number; content: NativeMetadata[] }
+> = ({ clients, commands, params }) => ({
   filters: {
     nature: NativeType.value,
   },
   inputs: inputs.publicKeyInput,
+  query: queryStrict(
+    ({ Query: { amount, skip, filter, ...query } }) =>
+      pipe(
+        clients.TK.v2.Metadata.ListMetadata({
+          ValidateOutput: false,
+          Query: {
+            ...query,
+            amount,
+            skip,
+            filter: {
+              description: undefined,
+              ...filter,
+              nature: NativeType.value,
+            },
+          },
+        } as any),
+        TE.map((content) => ({
+          total: content.totals.native,
+          content: content.data.map((d) => ({
+            ...d,
+            id: d.id ?? '',
+          })) as any[] as NativeMetadata[],
+        }))
+      ),
+    available
+  ),
   actions: (filter) => {
     return (
       <Box textAlign={'right'}>

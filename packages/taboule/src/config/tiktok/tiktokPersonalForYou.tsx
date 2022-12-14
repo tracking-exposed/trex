@@ -13,15 +13,45 @@ import {
   fieldsDefaultTail,
 } from '../defaults';
 import * as inputs from '../inputs';
+import { ListMetadataRequestInput, Results } from '../../state/queries';
+import { queryStrict, available } from 'avenger';
+import { APIError } from '@shared/errors/APIError';
+import { pipe } from 'fp-ts/lib/function';
+import * as TE from 'fp-ts/TaskEither';
 
-export const tikTokPersonalForYou: GetTabouleQueryConf<ForYouMetadata> = (
-  commands,
-  params
-) => ({
+export const tikTokPersonalForYou: GetTabouleQueryConf<
+  ForYouMetadata,
+  ListMetadataRequestInput
+> = ({ clients, commands, params }) => ({
   filters: {
     nature: ForYouType.value,
   },
   inputs: inputs.publicKeyInput,
+  query: queryStrict<
+    ListMetadataRequestInput,
+    APIError,
+    Results<ForYouMetadata>
+  >(
+    ({ Query: { filter, ...query } }) =>
+      pipe(
+        clients.TK.v2.Metadata.ListMetadata({
+          ValidateOutput: false,
+          Query: {
+            ...query,
+            filter: {
+              description: undefined,
+              ...filter,
+              nature: ForYouType.value,
+            },
+          },
+        } as any),
+        TE.map((content) => ({
+          total: content.totals.native,
+          content: content.data as any[] as ForYouMetadata[],
+        }))
+      ),
+    available
+  ),
   actions: (filter) => {
     return (
       <Box textAlign={'right'}>

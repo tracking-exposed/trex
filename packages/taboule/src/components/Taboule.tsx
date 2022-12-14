@@ -11,7 +11,10 @@ import {
 } from '@mui/x-data-grid';
 import { toValidationError } from '@shared/errors/ValidationError';
 import { GetLogger } from '@shared/logger';
+import { MakeAPIClient } from '@shared/providers/api.provider';
+import * as tkEndpoints from '@tktrex/shared/endpoints';
 import { TKMetadata } from '@tktrex/shared/models';
+import * as ytEndpoints from '@yttrex/shared/endpoints';
 import { Metadata } from '@yttrex/shared/models/metadata/Metadata';
 import * as QR from 'avenger/lib/QueryResult';
 import { WithQueries } from 'avenger/lib/react';
@@ -21,12 +24,7 @@ import { pipe } from 'fp-ts/lib/function';
 import * as t from 'io-ts';
 import * as React from 'react';
 import * as config from '../config';
-import { TabouleDataProvider } from '../state';
-import {
-  EndpointQuery,
-  SearchRequestInput,
-  TabouleQueries,
-} from '../state/queries';
+import { GetTabouleCommands } from '../state/commands';
 import { TabouleQueryKey } from '../state/types';
 import RefreshButton from './buttons/RefreshButton';
 import { ErrorOverlay } from './ErrorOverlay';
@@ -36,7 +34,7 @@ debug.enable(process.env.DEBUG ?? '');
 
 const log = GetLogger('taboule');
 
-const validateProps = <Q extends keyof TabouleQueries>(
+const validateProps = <Q extends keyof config.TabouleConfiguration>(
   props: TabouleProps<Q>
 ): E.Either<t.Errors, TabouleProps<Q>> => {
   return pipe(
@@ -47,7 +45,7 @@ const validateProps = <Q extends keyof TabouleQueries>(
   );
 };
 
-export interface TabouleProps<Q extends keyof TabouleQueries>
+export interface TabouleProps<Q extends keyof config.TabouleConfiguration>
   extends Omit<DataGridProps, 'rows' | 'columns'> {
   query: Q;
   showInput: boolean;
@@ -78,7 +76,7 @@ type ExpandableState =
     }
   | InvisibleExpandableState;
 
-export const Taboule = <Q extends keyof TabouleQueries>({
+export const Taboule = <Q extends keyof config.TabouleConfiguration>({
   height = 600,
   ...props
 }: TabouleProps<Q>): JSX.Element => {
@@ -116,19 +114,39 @@ export const Taboule = <Q extends keyof TabouleQueries>({
     quickFilterLogicOperator: GridLinkOperator.Or,
   });
 
-  const tabouleQueries = React.useMemo(
-    () => TabouleDataProvider(baseURL),
-    [baseURL]
-  );
-  const query: EndpointQuery<SearchRequestInput, any> = tabouleQueries.queries[
-    queryKey
-  ] as any;
+  const { commands, ...apiClients } = React.useMemo(() => {
+    const { API: YT } = MakeAPIClient(
+      {
+        baseURL,
+        getAuth: async (req) => req,
+        onUnauthorized: async (res) => res,
+      },
+      ytEndpoints
+    );
 
-  const { inputs, filters, expanded, ...queryConfig } = React.useMemo(
-    () =>
-      config.defaultConfiguration(tabouleQueries.commands, params)[queryKey],
-    [queryKey, params]
-  );
+    const { API: TK } = MakeAPIClient(
+      {
+        baseURL,
+        getAuth: async (req) => req,
+        onUnauthorized: async (res) => res,
+      },
+      tkEndpoints
+    );
+
+    const commands = GetTabouleCommands({ YT, TK });
+    return { YT, TK, commands };
+  }, [baseURL]);
+
+  const { inputs, filters, expanded, query, columns, ...queryConfig } =
+    React.useMemo(
+      () =>
+        config.defaultConfiguration({
+          clients: apiClients,
+          commands,
+          params,
+        })[queryKey],
+      [queryKey, params]
+    );
 
   const paramsInputs = React.useMemo(() => {
     if (showInput) {
@@ -150,6 +168,7 @@ export const Taboule = <Q extends keyof TabouleQueries>({
     page,
     filterMode: 'server',
     ...queryConfig,
+    columns: columns as any[],
     onFilterModelChange(model, details) {
       setFilterModel(model);
     },

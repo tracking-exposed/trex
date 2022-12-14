@@ -1,18 +1,18 @@
 import { createTheme, ThemeProvider } from '@material-ui/core';
 import { ErrorBoundary } from '@shared/components/Error/ErrorBoundary';
+import { TabouleConfiguration } from 'config';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { TabouleIndex, TabouleIndexProps } from './components';
-import { TabouleQueries } from './state/queries';
 
-interface DataTableProps<Q extends keyof TabouleQueries>
+interface DataTableProps<Q extends keyof TabouleConfiguration>
   extends TabouleIndexProps<Q> {
   node: HTMLDivElement;
 }
 
 let lastQueries: string[] = [];
 
-const appendTo = <Q extends keyof TabouleQueries>({
+const appendTo = <Q extends keyof TabouleConfiguration>({
   node,
   queries,
   ...props
