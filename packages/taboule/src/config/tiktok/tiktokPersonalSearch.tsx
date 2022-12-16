@@ -3,6 +3,7 @@ import { SearchMetadata } from '@tktrex/shared/models/metadata';
 import { SearchType } from '@tktrex/shared/models/Nature';
 import { SearchNatureType } from '@yttrex/shared/models/Nature';
 import { available, queryStrict } from 'avenger';
+import ExpandView from '../../components/expand-view/ExpandView';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/TaskEither';
 import * as React from 'react';
@@ -80,6 +81,17 @@ export const tikTokPersonalSearch: GetTabouleQueryConf<
           }}
         />
       </Box>
+    );
+  },
+  expanded: ({ row, ...props }) => {
+    return (
+      <ExpandView {...props}>
+        <ul>
+          {row.results.map((r) => (
+            <li key={r.textdesc}>{r.textdesc}</li>
+          ))}
+        </ul>
+      </ExpandView>
     );
   },
   columns: [
