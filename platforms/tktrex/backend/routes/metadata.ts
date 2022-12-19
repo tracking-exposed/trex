@@ -5,7 +5,6 @@ import { throwTE } from '@shared/utils/task.utils';
 import endpoints from '@tktrex/shared/endpoints/v2/metadata.endpoints';
 import { ListMetadataOutput } from '@tktrex/shared/models/http/output/ListMetadata.output';
 import { ListMetadataQuery } from '@tktrex/shared/models/http/query/ListMetadata.query';
-import createDebug from 'debug';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/TaskEither';
 import _ from 'lodash';
@@ -13,8 +12,9 @@ import moment from 'moment';
 import { toTKMetadata } from '../io/metadata.io';
 import * as automo from '../lib/automo';
 import CSV from '../lib/CSV';
+import { trexLogger } from '@shared/logger';
 
-const debug = createDebug('routes:public');
+const metadataLogger = trexLogger.extend('routes:public');
 
 // This variables is used as cap in every readLimit below
 const PUBLIC_AMOUNT_ELEMS = 100;
@@ -31,7 +31,7 @@ const listMetadata = async (req: any): Promise<ListMetadataResponse> => {
     query: ListMetadataQuery;
   };
 
-  debug('Filter metadata with query %O', query);
+  metadataLogger.debug('Filter metadata with query %O', query);
 
   const {
     researchTag,
@@ -43,7 +43,7 @@ const listMetadata = async (req: any): Promise<ListMetadataResponse> => {
     format,
   } = query;
 
-  debug('Filter metadata with query %O', query);
+  metadataLogger.debug('Filter metadata with query %O', query);
 
   const filter = {} as any;
   if (publicKey) {
@@ -57,7 +57,7 @@ const listMetadata = async (req: any): Promise<ListMetadataResponse> => {
   }
 
   if (queryFilter?.nature) {
-    filter['nature.type'] = queryFilter.nature;
+    filter.type = queryFilter.nature;
 
     switch (queryFilter.nature) {
       case 'search': {
@@ -65,6 +65,15 @@ const listMetadata = async (req: any): Promise<ListMetadataResponse> => {
         if (q) {
           filter.query = {
             $regex: new RegExp(q, 'i'),
+          };
+        }
+        break;
+      }
+      case 'foryou': {
+        const { description } = queryFilter;
+        if (description) {
+          filter.description = {
+            $regex: new RegExp(description, 'i'),
           };
         }
         break;
@@ -82,7 +91,12 @@ const listMetadata = async (req: any): Promise<ListMetadataResponse> => {
     }
   }
 
-  debug('Filtering metadata for %O (%d, %d)', filter, amount, skip);
+  metadataLogger.debug(
+    'Filtering metadata for %O (%d, %d)',
+    filter,
+    amount,
+    skip
+  );
 
   return pipe(
     TE.tryCatch(
@@ -97,7 +111,11 @@ const listMetadata = async (req: any): Promise<ListMetadataResponse> => {
      * Disable the validation of the output for the moment
      */
     TE.map(({ totals, data }) => {
-      debug('Metadata by %O, %d evidences', filter, _.size(data));
+      metadataLogger.debug(
+        'Metadata by %O, %d evidences',
+        filter,
+        _.size(data)
+      );
       return {
         totals,
         data: data.map(toTKMetadata),
@@ -111,7 +129,7 @@ const listMetadata = async (req: any): Promise<ListMetadataResponse> => {
         filename += researchTag ? `-research_tag-${researchTag}` : '';
         filename += '-' + moment().format('YY-MM-DD') + '.csv';
 
-        debug(
+        metadataLogger.info(
           'VideoCSV: produced %d bytes, returning %s',
           _.size(csv),
           filename

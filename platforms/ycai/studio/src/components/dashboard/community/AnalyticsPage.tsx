@@ -10,7 +10,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { config } from '../../../config';
 import {
-  ccRelatedUsers,
+  YCAIccRelatedUsers,
   profile,
 } from '../../../state/dashboard/creator.queries';
 import { makeStyles } from '../../../theme';
@@ -77,7 +77,7 @@ const CreatorAnalyticsPage: React.FC<CreatorAnalyticsPageProps> = ({
         <LinkAccountButton />
       ) : (
         <WithQueries
-          queries={{ stats: ccRelatedUsers }}
+          queries={{ stats: YCAIccRelatedUsers }}
           params={{ stats: { params: { amount, skip: 0 } } }}
           render={QR.fold(LazyFullSizeLoader, ErrorBox, ({ stats }) => {
             return (
@@ -144,7 +144,7 @@ const CreatorAnalyticsPage: React.FC<CreatorAnalyticsPageProps> = ({
                       <Taboule
                         height={500}
                         showInput={false}
-                        query="ccRelatedUsers"
+                        query="YCAIccRelatedUsers"
                         baseURL={config.API_URL}
                         initialParams={{
                           channelId: profile.channelId,

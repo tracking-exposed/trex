@@ -1,15 +1,17 @@
 import * as React from 'react';
-import { Box, FormControlLabel, Input } from '@material-ui/core';
+import { Box, FormControlLabel, Input } from '@mui/material';
 
 const makeTextInput =
   ({ label, key }: { label: string; key: string }) =>
   // eslint-disable-next-line react/display-name
   (params: any, setParams: React.Dispatch<any>): JSX.Element => {
     return (
-      <Box margin={2}>
+      <Box>
         <FormControlLabel
           style={{
             alignItems: 'flex-start',
+            marginLeft: 0,
+            width: '100%',
           }}
           labelPlacement="top"
           label={label}
@@ -19,6 +21,9 @@ const makeTextInput =
               name={key}
               value={params[key] ?? ''}
               onChange={(e) => setParams({ ...params, [key]: e.target.value })}
+              style={{
+                width: '30%',
+              }}
             />
           }
         />
@@ -31,7 +36,7 @@ export const channelIdInput = makeTextInput({
   key: 'channelId',
 });
 export const publicKeyInput = makeTextInput({
-  label: 'Public Key',
+  label: 'Public Key:',
   key: 'publicKey',
 });
 export const experimentIdInput = makeTextInput({

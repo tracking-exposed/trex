@@ -1,13 +1,13 @@
 import { fc } from '@shared/test';
 import { propsOmit } from '@shared/utils/arbitrary.utils';
+import { subDays } from 'date-fns';
+import { getArbitrary } from 'fast-check-io-ts';
+import * as t from 'io-ts';
 import {
   HomeMetadata,
   ParsedInfo,
   VideoMetadata,
 } from '../models/metadata/Metadata';
-import { subDays } from 'date-fns';
-import { getArbitrary } from 'fast-check-io-ts';
-import * as t from 'io-ts';
 
 export const ParsedInfoArb = getArbitrary(
   t.strict({

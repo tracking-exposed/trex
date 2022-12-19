@@ -1,7 +1,7 @@
-import { Box, IconButton, Tooltip } from '@material-ui/core';
+import { Box, IconButton, Tooltip } from '@mui/material';
 import { GridCellParams } from '@mui/x-data-grid';
-import CompareIcon from '@material-ui/icons/CompareOutlined';
-import RelatedIcon from '@material-ui/icons/Replay30Outlined';
+import CompareIcon from '@mui/icons-material/CompareOutlined';
+import RelatedIcon from '@mui/icons-material/Replay30Outlined';
 import * as React from 'react';
 import CSVDownloadButton from '../components/buttons/CSVDownloadButton';
 import DeleteButton from '../components/buttons/DeleteButton';
@@ -24,7 +24,7 @@ export const personalMetadataActions =
                 },
               },
               {
-                personalSearches: {
+                youtubePersonalSearches: {
                   Params: params,
                 },
               }

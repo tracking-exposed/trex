@@ -5,7 +5,7 @@ import {
   expectToBeIncludedIn,
   normalizeDeepStrings,
 } from '../../src/parser/v2/lib/util';
-import { ForYouVideoMetadata } from '../../src/models/metadata/ForYouMetadata';
+import { ForYouMetadata } from '../../src/models/metadata/ForYouMetadata';
 import createServerSideParser from '../../src/parser/v2/serverSideParser';
 import historicData from './fixtures/history.json';
 import { v4 as uuid } from 'uuid';
@@ -16,7 +16,7 @@ describe('The TikTok parser for the ForYou feed', () => {
   // "foryou" videos so that we have complete data for our tests,
   // and exclude the example that we know to be wrong
   const forYouSamples = historicData.filter((sample) => {
-    const decodeResult = ForYouVideoMetadata.decode({
+    const decodeResult = ForYouMetadata.decode({
       ...sample.metadata,
       nature: { type: sample.metadata.type },
       timelineId: `bread-${uuid()}`,
@@ -46,7 +46,7 @@ describe('The TikTok parser for the ForYou feed', () => {
     // inside the expected value,
     // now we also check that it validates the schema of the
     // expected value
-    const validation = ForYouVideoMetadata.decode({
+    const validation = ForYouMetadata.decode({
       id: uuid(),
       savingTime: new Date().toISOString(),
       publicKey: 'fake-publicKey',

@@ -4,7 +4,7 @@ const commonENV = {
 
 const tk = {
   backend: {
-    name: 'server',
+    name: 'tk:server',
     namespace: 'tk:backend',
     cwd: __dirname,
     script: 'yarn start',

@@ -1,9 +1,21 @@
-import { Box, Typography } from '@material-ui/core';
-import { DataGrid, DataGridProps, GridColTypeDef } from '@mui/x-data-grid';
-import { APIError } from '@shared/errors/APIError';
+import { Box, Divider, Typography } from '@mui/material';
+import {
+  DataGrid,
+  DataGridProps,
+  GridColTypeDef,
+  GridEventListener,
+  GridFilterModel,
+  GridFooter,
+  GridLinkOperator,
+  GridToolbarQuickFilter,
+} from '@mui/x-data-grid';
 import { toValidationError } from '@shared/errors/ValidationError';
 import { GetLogger } from '@shared/logger';
-import { ObservableQuery } from 'avenger/lib/Query';
+import { MakeAPIClient } from '@shared/providers/api.provider';
+import * as tkEndpoints from '@tktrex/shared/endpoints';
+import { TKMetadata } from '@tktrex/shared/models';
+import * as ytEndpoints from '@yttrex/shared/endpoints';
+import { Metadata } from '@yttrex/shared/models/metadata/Metadata';
 import * as QR from 'avenger/lib/QueryResult';
 import { WithQueries } from 'avenger/lib/react';
 import debug from 'debug';
@@ -12,16 +24,17 @@ import { pipe } from 'fp-ts/lib/function';
 import * as t from 'io-ts';
 import * as React from 'react';
 import * as config from '../config';
-import { TabouleDataProvider } from '../state';
-import { Results, SearchRequestInput, TabouleQueries } from '../state/queries';
+import { GetTabouleCommands } from '../state/commands';
 import { TabouleQueryKey } from '../state/types';
+import RefreshButton from './buttons/RefreshButton';
 import { ErrorOverlay } from './ErrorOverlay';
+import './Taboule.css';
 
 debug.enable(process.env.DEBUG ?? '');
 
 const log = GetLogger('taboule');
 
-const validateProps = <Q extends keyof TabouleQueries>(
+const validateProps = <Q extends keyof config.TabouleConfiguration>(
   props: TabouleProps<Q>
 ): E.Either<t.Errors, TabouleProps<Q>> => {
   return pipe(
@@ -32,7 +45,7 @@ const validateProps = <Q extends keyof TabouleQueries>(
   );
 };
 
-export interface TabouleProps<Q extends keyof TabouleQueries>
+export interface TabouleProps<Q extends keyof config.TabouleConfiguration>
   extends Omit<DataGridProps, 'rows' | 'columns'> {
   query: Q;
   showInput: boolean;
@@ -43,7 +56,27 @@ export interface TabouleProps<Q extends keyof TabouleQueries>
   height?: number | string;
 }
 
-export const Taboule = <Q extends keyof TabouleQueries>({
+enum ExpandableActionType {
+  SHOW_MODAL = 'SHOW_MODAL',
+  CLOSE_MODAL = 'CLOSE_MODAL',
+}
+interface ExpandableAction {
+  type: ExpandableActionType;
+  payload: TKMetadata.TKMetadata | Metadata;
+}
+
+interface InvisibleExpandableState {
+  isVisible: false;
+  row: undefined;
+}
+type ExpandableState =
+  | {
+      isVisible: true;
+      row: TKMetadata.TKMetadata | Metadata;
+    }
+  | InvisibleExpandableState;
+
+export const Taboule = <Q extends keyof config.TabouleConfiguration>({
   height = 600,
   ...props
 }: TabouleProps<Q>): JSX.Element => {
@@ -76,22 +109,44 @@ export const Taboule = <Q extends keyof TabouleQueries>({
 
   const [page, setPage] = React.useState(0);
   const [pageSize, setPageSize] = React.useState(props.pageSize ?? 25);
+  const [filterModel, setFilterModel] = React.useState<GridFilterModel>({
+    items: [],
+    quickFilterLogicOperator: GridLinkOperator.Or,
+  });
 
-  const tabouleQueries = React.useMemo(
-    () => TabouleDataProvider(baseURL),
-    [baseURL]
-  );
-  const query: ObservableQuery<
-    SearchRequestInput,
-    APIError,
-    Results<any>
-  > = tabouleQueries.queries[queryKey];
+  const { commands, ...apiClients } = React.useMemo(() => {
+    const { API: YT } = MakeAPIClient(
+      {
+        baseURL,
+        getAuth: async (req) => req,
+        onUnauthorized: async (res) => res,
+      },
+      ytEndpoints
+    );
 
-  const { inputs, ...queryConfig } = React.useMemo(
-    () =>
-      config.defaultConfiguration(tabouleQueries.commands, params)[queryKey],
-    [queryKey, params]
-  );
+    const { API: TK } = MakeAPIClient(
+      {
+        baseURL,
+        getAuth: async (req) => req,
+        onUnauthorized: async (res) => res,
+      },
+      tkEndpoints
+    );
+
+    const commands = GetTabouleCommands({ YT, TK });
+    return { YT, TK, commands };
+  }, [baseURL]);
+
+  const { inputs, filters, expanded, query, columns, ...queryConfig } =
+    React.useMemo(
+      () =>
+        config.defaultConfiguration({
+          clients: apiClients,
+          commands,
+          params,
+        })[queryKey],
+      [queryKey, params]
+    );
 
   const paramsInputs = React.useMemo(() => {
     if (showInput) {
@@ -104,7 +159,7 @@ export const Taboule = <Q extends keyof TabouleQueries>({
     setPageSize(pageSize);
   }, []);
 
-  const handlePageChange = React.useCallback((page: number) => {
+  const handlePageChange = React.useCallback((page: number, details: any) => {
     setPage(page);
   }, []);
 
@@ -113,15 +168,39 @@ export const Taboule = <Q extends keyof TabouleQueries>({
     page,
     filterMode: 'server',
     ...queryConfig,
+    columns: columns as any[],
+    onFilterModelChange(model, details) {
+      setFilterModel(model);
+    },
+
+    filterModel,
     rows: [],
     rowsPerPageOptions: [25, 50, 100],
+    initialState: {
+      pagination: {
+        page: 0,
+      },
+    },
     pageSize,
     paginationMode: 'server',
+    pagination: true,
+    componentsProps: {
+      toolbar: {
+        showQuickFilter: true,
+        quickFilterProps: {
+          debounceMs: 500,
+        },
+      },
+    },
     components: {
       ErrorOverlay,
-      Footer: () => {
+      Footer: (props) => {
         return (
-          <Box margin={2}>
+          <Box display={'flex'} flexDirection="column" margin={2}>
+            <Box>
+              <GridFooter />
+            </Box>
+            <Divider style={{ marginBottom: 10 }} />
             <Typography>Taboule - v{process.env.VERSION}</Typography>
           </Box>
         );
@@ -129,7 +208,38 @@ export const Taboule = <Q extends keyof TabouleQueries>({
       ...(config.actions !== undefined
         ? {
             Toolbar: (props) => {
-              return <Box margin={2}>{queryConfig.actions?.()}</Box>;
+              return (
+                <Box
+                  style={{
+                    display: 'flex',
+                    alignContent: 'center',
+                  }}
+                >
+                  <Box
+                    margin={2}
+                    style={{
+                      display: 'flex',
+                      flexGrow: 1,
+                      alignItems: 'center',
+                    }}
+                  >
+                    <GridToolbarQuickFilter {...props.quickFilterProps} />
+                  </Box>
+
+                  <Box
+                    margin={2}
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      justifyContent: 'flex-end',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <RefreshButton onClick={handleReload} />
+                    {queryConfig.actions?.({ ...params, filter: filters })}
+                  </Box>
+                </Box>
+              );
             },
           }
         : {}),
@@ -139,17 +249,86 @@ export const Taboule = <Q extends keyof TabouleQueries>({
   log.debug(`Rendering with props %O`, dataGridProps);
   log.debug(`Query %s (%O) with params %O`, queryKey, query, params);
 
+  const initialState: InvisibleExpandableState = {
+    isVisible: false,
+    row: undefined,
+  };
+  const infoReducerFn = (
+    state: ExpandableState,
+    action: ExpandableAction
+  ): ExpandableState => {
+    const { type, payload } = action;
+    if (type === 'SHOW_MODAL') {
+      return { isVisible: true, row: payload };
+    }
+    if (type === 'CLOSE_MODAL') {
+      return initialState;
+    }
+    return state;
+  };
+  const [infoState, dispatchInfoState] = React.useReducer(
+    infoReducerFn,
+    initialState
+  );
+
+  const handleEvent: GridEventListener<'rowClick'> = (
+    params // GridRowParams
+  ) => {
+    dispatchInfoState({
+      type: ExpandableActionType.SHOW_MODAL,
+      payload: params.row,
+    });
+  };
+
+  const handleHideModal = (): void => {
+    dispatchInfoState({
+      type: ExpandableActionType.CLOSE_MODAL,
+      payload: initialState.row as any,
+    });
+  };
+
+  const [, forceUpdate] = React.useReducer((x) => x + 1, 0);
+
+  const handleReload = (): void => {
+    forceUpdate();
+  };
+
+  const amount = pageSize;
+  const skip = page * pageSize;
+
+  const queryFilters = React.useMemo(() => {
+    const currentFilter = filterModel.items.reduce(
+      (acc, v) => ({ ...acc, [v.columnField]: v.value }),
+      {}
+    );
+
+    return {
+      ...filters,
+      ...currentFilter,
+    };
+  }, [filterModel]);
+
   return (
     <Box height={height}>
-      {paramsInputs}
+      <div
+        style={{
+          position: 'relative',
+          marginBottom: '30px',
+        }}
+      >
+        {paramsInputs}
+      </div>
+
       <WithQueries
         queries={{ query }}
         params={{
           query: {
             Params: params,
             Query: {
-              amount: pageSize,
-              skip: page * pageSize,
+              publicKey: params.publicKey,
+              amount,
+              skip,
+              filter: queryFilters,
             },
           },
         }}
@@ -169,11 +348,15 @@ export const Taboule = <Q extends keyof TabouleQueries>({
                 rows={query.content}
                 onPageSizeChange={handlePageSizeChange}
                 onPageChange={handlePageChange}
+                onRowClick={handleEvent}
               />
             );
           }
         )}
       />
+      {infoState.row && expanded
+        ? expanded({ ...(infoState as any), onClose: handleHideModal })
+        : null}
     </Box>
   );
 };

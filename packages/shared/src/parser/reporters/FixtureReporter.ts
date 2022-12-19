@@ -10,7 +10,7 @@ export const FixtureReporter = (basePath: string): ErrorReporter<any> => {
       const day = getDate(now);
       const month = getMonth(now);
       const year = getYear(now);
-      const entryNature = e.html.nature.type ?? 'failed';
+      const entryNature = e.html.nature?.type ?? e.html.type ?? 'failed';
       const fixtureFolderPath = path.resolve(
         basePath,
         `${year}/${month}/${day}`,

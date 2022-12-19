@@ -1,11 +1,19 @@
 const { commonENV } = require('./ecosystem.config');
+const path = require('path');
+
+require('dotenv').config({
+  path: path.resolve(__dirname, '.env.development'),
+  override: true,
+});
 
 const env = {
   ...commonENV,
+  ...process.env,
+  key: 'fuffa',
 };
 
 const testEnv = {
-  ...commonENV,
+  ...env,
   mongoDb: 'tktrex-test',
 };
 

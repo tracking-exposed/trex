@@ -1,7 +1,5 @@
 import React from 'react';
-
-import { Card } from '@material-ui/core';
-import FormHelperText from '@material-ui/core/FormHelperText';
+import { Card, FormHelperText } from '@mui/material';
 
 interface TooltipProps {
   tooltipText: string;

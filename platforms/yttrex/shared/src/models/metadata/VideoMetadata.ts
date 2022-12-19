@@ -3,6 +3,7 @@ import { date } from 'io-ts-types/lib/date';
 import { VideoN } from '../Nature';
 import { YTMetadataBase } from './MetadataBase';
 import { ParsedInfo } from './VideoResult';
+import { DateFromISOString } from 'io-ts-types/lib/DateFromISOString';
 
 export const VideoMetadata = t.strict(
   {
@@ -14,7 +15,7 @@ export const VideoMetadata = t.strict(
     authorSource: t.string,
     title: t.string,
     publicationString: t.string,
-    publicationTime: t.union([date, t.null]),
+    publicationTime: t.union([DateFromISOString, date, t.null]),
     likeInfo: t.strict(
       {
         watchedLikes: t.union([t.number, t.null]),

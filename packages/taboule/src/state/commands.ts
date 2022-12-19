@@ -1,7 +1,11 @@
-import { MakeAPIClient, TERequest } from '@shared/providers/api.provider';
+import { APIError } from '@shared/errors/APIError';
+import { TERequest } from '@shared/providers/api.provider';
+import * as TKEndpoints from '@tktrex/shared/endpoints';
+import { ListMetadataQuery as TKListMetadataQuery } from '@tktrex/shared/models/http/query/ListMetadata.query';
+import * as YTEndpoints from '@yttrex/shared/endpoints';
+import { ListMetadataQuery as YTListMetadataQuery } from '@yttrex/shared/models/http/metadata/query/ListMetadata.query';
 import { command } from 'avenger';
-import * as Endpoints from '@yttrex/shared/endpoints';
-import { TabouleQueries } from './queries';
+import { APIClients } from '../config/config.type';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 
@@ -11,7 +15,7 @@ const downloadFile = (filename: string, content: string): void => {
     'href',
     'data:text/plain;charset=utf-8, ' + encodeURIComponent(content)
   );
-  aElement.setAttribute('download', `${filename}.txt`);
+  aElement.setAttribute('download', `${filename}.csv`);
 
   // Above code is equivalent to
   // <a href="path of file" download="file name">
@@ -23,58 +27,78 @@ const downloadFile = (filename: string, content: string): void => {
   document.body.removeChild(aElement);
 };
 export interface TabouleCommands {
-  deleteContribution: TERequest<
-    typeof Endpoints.v2.Public.DeletePersonalContributionByPublicKey
+  ytDownloadAsCSV: TERequest<
+    typeof YTEndpoints.v2.Metadata.ListMetadata,
+    undefined
   >;
-  downloadAsCSV: TERequest<typeof Endpoints.v2.Public.GetPersonalCSV>;
-  downloadSearchesAsCSV: TERequest<typeof Endpoints.v2.Public.SearchesAsCSV>;
+  tkDownloadAsCSV: TERequest<
+    typeof TKEndpoints.v2.Metadata.ListMetadata,
+    undefined
+  >;
+  downloadSearchesAsCSV: TERequest<typeof YTEndpoints.v2.Public.SearchesAsCSV>;
+  deleteContribution: TERequest<
+    typeof YTEndpoints.v2.Public.DeletePersonalContributionByPublicKey
+  >;
 }
 
-export const GetTabouleCommands = (
-  {
-    baseURL,
-  }: {
-    baseURL: string;
-  },
-  queries: TabouleQueries
-): TabouleCommands => {
-  const API = MakeAPIClient(
-    {
-      baseURL,
-      getAuth: async (req) => req,
-      onUnauthorized: async (res) => res,
-    },
-    Endpoints
-  );
+export const GetTabouleCommands = (clients: APIClients): TabouleCommands => {
   const deleteContribution = command(
     (input: { Params: { publicKey: string; selector: string | undefined } }) =>
-      API.API.v2.Public.DeletePersonalContributionByPublicKey({
+      clients.YT.v2.Public.DeletePersonalContributionByPublicKey({
         Params: {
           ...input.Params,
           selector: 'undefined',
         },
-      }),
-    {
-      personalSearches: queries.personalSearches,
-    }
+      })
   );
 
-  const downloadAsCSV = command(
-    (input: {
-      Params: { publicKey: string; type: 'home' | 'video' | 'search' };
-    }) =>
-      pipe(
-        API.API.v2.Public.GetPersonalCSV({
-          Params: input.Params,
-        }),
-        TE.map((content) => downloadFile(input.Params.type, content))
-      )
+  const ytDownloadAsCSV = command<
+    { Query: YTListMetadataQuery },
+    APIError,
+    undefined
+  >(({ Query: { filter, ...query } }) =>
+    pipe(
+      clients.YT.v2.Metadata.ListMetadata({
+        ValidateOutput: false,
+        Query: {
+          ...query,
+          amount: 10000,
+          format: 'csv',
+          filter,
+        },
+      } as any),
+      TE.map((content) => {
+        downloadFile(filter?.nature ?? 'all', content as any);
+        return undefined;
+      })
+    )
+  );
+
+  const tkDownloadAsCSV = command<
+    { Query: TKListMetadataQuery },
+    APIError,
+    undefined
+  >(({ Query: { filter, ...query } }) =>
+    pipe(
+      clients.TK.v2.Metadata.ListMetadata({
+        Query: {
+          ...query,
+          amount: 10000,
+          format: 'csv',
+          filter,
+        },
+      }),
+      TE.map((content) =>
+        downloadFile(filter?.nature ?? 'all', content as any)
+      ),
+      TE.map(() => undefined)
+    )
   );
 
   const downloadSearchesAsCSV = command(
     (input: { Params: { queryString: string } }) =>
       pipe(
-        API.API.v2.Public.SearchesAsCSV({
+        clients.YT.v2.Public.SearchesAsCSV({
           Params: input.Params,
         }),
         TE.map((content) => {
@@ -85,7 +109,8 @@ export const GetTabouleCommands = (
 
   return {
     deleteContribution,
-    downloadAsCSV,
+    ytDownloadAsCSV,
+    tkDownloadAsCSV,
     downloadSearchesAsCSV,
   };
 };

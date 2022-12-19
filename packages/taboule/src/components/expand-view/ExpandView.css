@@ -1,0 +1,26 @@
+.expand-view {
+  position: fixed;
+  right: -600px;
+  height: 100%;
+  top: 0;
+  width: 30vw;
+  background-color: white;
+  box-shadow: -4px 0px 22px -10px rgba(0, 0, 0, 0.75);
+  transition: all 0.4s linear;
+  font-family: Roboto;
+  display: flex;
+  z-index: 3000;
+}
+
+.expand-view.visible {
+  right: 0;
+}
+
+.expand-view__close {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}

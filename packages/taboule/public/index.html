@@ -13,36 +13,49 @@
     <div>
       <h2>Taboule</h2>
       <div>
+        <div style="display: inline-block">
+          <div id="taboule-show-inputs" style="display: inline">
+            <label>Show Params Inputs</label>
+            <input type="checkbox" checked="true" />
+          </div>
+          <div id="taboule-show-as-tabs">
+            <label>Show As Tabbed</label>
+            <input type="checkbox" />
+          </div>
+        </div>
+
         <select id="taboule-query-value">
-          <option value="ccRelatedUsers">Content creator Related Users</option>
-          <option value="personalSearches">Personal Searches</option>
-          <option value="personalVideos">Personal Videos</option>
-          <option value="personalHomes">Personal Homes</option>
-          <option value="personalAds">Personal ADS</option>
-          <option value="getExperimentById">Compare Experiment</option>
-          <option value="getExperimentList">Experiment list</option>
+          <option value="YCAIccRelatedUsers">
+            YCAI Content creator Related Users
+          </option>
+          <option value="youtubePersonalSearches">YT Personal Searches</option>
+          <option value="youtubePersonalVideos">YT Personal Videos</option>
+          <option value="youtubePersonalHomes">YT Personal Homes</option>
+          <option value="youtubePersonalAds">YT Personal ADS</option>
+          <option value="youtubeGetExperimentById">
+            YT Compare Experiment
+          </option>
+          <option value="youtubeGetExperimentList">YT Experiment list</option>
           <option value="tikTokPersonalHTMLSummary">
-            TikTok Personal HTML Summary
+            TK Personal HTML Summary
           </option>
           <option value="tikTokPersonalSearch">
-            TikTok Personal Search
+            TK Personal Metadata: search
           </option>
-          <option value="tikTokSearches" selected>
-            TikTok (Collective) Searches
+          <option value="tikTokPersonalNative">
+            TK Personal Metadata: native
           </option>
+          <option value="tikTokPersonalForYou">TK Personal ForYou</option>
+          <option value="tikTokPersonalFollowing">TK Personal Following</option>
         </select>
-        <div id="taboule-show-inputs" style="display: inline">
-          <label>Show Params Inputs</label>
-          <input type="checkbox" checked="true" />
-        </div>
       </div>
       <div id="main"></div>
     </div>
   </body>
   <script type="text/javascript" src="./taboule.js"></script>
   <script type="text/javascript">
-    // var baseURL = 'http://localhost:9000/api/';
-    var baseURL = 'http://localhost:14000/api/';
+    var baseURL = 'http://localhost:9000/api/';
+    // var baseURL = 'http://localhost:14000/api/';
     // var baseURL = 'https://tiktok.tracking.exposed/api/';
     // var baseURL = 'https://youtube.tracking.exposed/api/';
 
@@ -50,40 +63,73 @@
     const showInputCheckbox = document.querySelector(
       '#taboule-show-inputs input'
     );
+    const showsAsTabInput = document.querySelector(
+      '#taboule-show-as-tabs input'
+    );
 
-    const runTaboule = (query, showInput = false) => {
+    const getSelectedQueries = () => {
+      const els = querySelect.querySelectorAll('option:checked');
+      return Array.from(els).map((el) => ({
+        value: el.value,
+        label: el.innerHTML,
+      }));
+    };
+
+    const runTaboule = (queries, showInput = false) => {
       window.Taboule({
         showInput: showInput,
         node: document.getElementById('main'),
         baseURL: baseURL,
-        query: query,
         pageSize: 25,
         initialParams: {
-          publicKey: 'fake-key',
+          publicKey: 'H7AsuUszehN4qKTj2GYYwNNzkJVqUQBRo2wgKevzeUwx',
         },
+        queries,
       });
     };
 
+    querySelect.setAttribute('multiple', 'true');
+    showsAsTabInput.setAttribute('checked', 'true');
+
     querySelect.addEventListener('change', (e) => {
-      runTaboule(
-        e.target.value,
-        showInputCheckbox.getAttribute('checked') === 'true'
-      );
+      const values = getSelectedQueries();
+      runTaboule(values, showInputCheckbox.getAttribute('checked') === 'true');
     });
 
     showInputCheckbox.addEventListener('change', (e) => {
       const isChecked = e.currentTarget.getAttribute('checked') === 'true';
       e.currentTarget.setAttribute('checked', isChecked ? 'false' : 'true');
-      runTaboule(querySelect.value, !isChecked);
+      runTaboule(getSelectedQueries(), !isChecked);
+    });
+
+    showsAsTabInput.addEventListener('change', (e) => {
+      let isChecked = e.currentTarget.getAttribute('checked') === 'true';
+      e.currentTarget.setAttribute('checked', isChecked ? 'false' : 'true');
+      isChecked = e.currentTarget.getAttribute('checked') === 'true';
+      if (isChecked) {
+        querySelect.setAttribute('multiple', 'true');
+      } else {
+        querySelect.removeAttribute('multiple');
+      }
     });
 
     console.log(
       'show input checked?',
       showInputCheckbox.getAttribute('checked')
     );
-    runTaboule(
-      querySelect.value,
-      showInputCheckbox.getAttribute('checked') === 'true'
-    );
+
+    console.log('show tabs?', showsAsTabInput.getAttribute('checked'));
+
+    ['youtubePersonalSearches', 'youtubePersonalVideos'].forEach((v) => {
+      const option = querySelect.querySelector(`option[value="${v}"]`);
+      option?.setAttribute('checked', 'true');
+    });
+
+    setTimeout(() => {
+      runTaboule(
+        getSelectedQueries(),
+        showInputCheckbox.getAttribute('checked') === 'true'
+      );
+    }, 1000);
   </script>
 </html>
