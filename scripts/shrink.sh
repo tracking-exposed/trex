@@ -57,7 +57,6 @@ mv TODO.md README.md
 
 zip $fileout -r ./* \
   .npmrc .nvmrc .yarn .yarnrc.yml \
-  -x "yarn.lock" \
   -x ".yarn/unplugged/**" \
   -x ".yarn/cache/**" \
   -x ".vscode/**" \
