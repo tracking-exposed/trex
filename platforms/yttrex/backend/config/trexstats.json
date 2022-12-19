@@ -151,7 +151,7 @@
     },
     {
       "name": "experiments",
-      "column": "experiments2",
+      "column": "experiments",
       "timevar": "when",
       "variables": [{ "name": "total", "selector": {} }]
     },
