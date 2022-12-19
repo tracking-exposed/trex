@@ -59,6 +59,7 @@ services:
       dockerfile: from-zip.Dockerfile
       context: .
       target: unzip
+    entrypoint: /bin/sh
     container_name: build-from-zip
     stdin_open: true # docker run -i
     tty: true # docker run -t

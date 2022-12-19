@@ -1,0 +1,47 @@
+name: TrEx - Build from ZIP
+
+on:
+  push:
+    branches:
+      - daily
+      - fix/*
+      - feat/*
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x]
+    services:
+      mongo-db:
+        image: mongo:4.2
+        ports:
+          - 27017:27017
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
+          cache-dependency-path: yarn.lock
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Build ZIP for Firefox
+        run: ./scripts/shrink.sh
+
+      - name: Log in to registry
+        # This is where you will update the personal access token to GITHUB_TOKEN
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
+
+      - name: Test ZIP with docker
+        run: |
+          docker build -f from-zip.Dockerfile -t build-from-zip .
