@@ -68,10 +68,10 @@ checkret('ads savingTime', ret);
 ret = db.ads.createIndex({ id: 1 }, { unique: true });
 checkret('ads id', ret);
 
-ret = db.experiments2.createIndex({ experimentId: -1, unique: true });
-checkret('experiments2 experimentId', ret);
-ret = db.experiments2.createIndex({ when: -1 });
-checkret('experiments2 when', ret);
+ret = db.experiments.createIndex({ experimentId: -1 }, { unique: true });
+checkret('experiments experimentId', ret);
+ret = db.experiments.createIndex({ when: -1 });
+checkret('experiments when', ret);
 
 /* below this the collections are for youchoose */
 ret = db.recommendations.createIndex({ urlId: 1 }, { unique: true });
