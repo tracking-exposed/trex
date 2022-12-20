@@ -41,9 +41,10 @@ const config = {
         id: 'tktrex-docs',
         path: path.resolve(__dirname, '../platforms/tktrex/docs/docs'),
         routeBasePath: 'tktrex/docs',
-        sidebarPath: require.resolve('./sidebars.js'),
+        sidebarPath: require.resolve('../platforms/tktrex/docs/sidebars.js'),
       },
     ],
+
     // @yttrex
     // API
     [
@@ -61,7 +62,7 @@ const config = {
         id: 'yttrex-docs',
         path: path.resolve(__dirname, '../platforms/yttrex/docs/docs'),
         routeBasePath: 'yttrex/docs',
-        sidebarPath: require.resolve('./sidebars.js'),
+        sidebarPath: require.resolve('../platforms/yttrex/docs/sidebars.js'),
       },
     ],
     // @ycai
