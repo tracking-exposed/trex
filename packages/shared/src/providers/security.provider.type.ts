@@ -5,7 +5,7 @@ export interface SecurityProvider {
   makeKeypair: (passphrase: string) => TE.TaskEither<Error, Keypair>;
   makeToken: (date: Date, secretKey: string) => TE.TaskEither<Error, string>;
   makeSignature: (
-    payload: any,
+    payload: string,
     secretKey: string
   ) => TE.TaskEither<Error, string>;
   verifySignature: (

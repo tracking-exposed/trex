@@ -9725,6 +9725,7 @@ __metadata:
     nconf: ^0.11.3
     node-fetch: ^2.6.7
     numeral: ^2.0.6
+    object-sizeof: ^1.6.3
     prettier: ^2.7.1
     supertest: ^6.2.4
     ts-endpoint: ^2.0.0
@@ -24320,6 +24321,15 @@ __metadata:
   version: 1.1.1
   resolution: "object-keys@npm:1.1.1"
   checksum: b363c5e7644b1e1b04aa507e88dcb8e3a2f52b6ffd0ea801e4c7a62d5aa559affe21c55a07fd4b1fd55fc03a33c610d73426664b20032405d7b92a1414c34d6a
+  languageName: node
+  linkType: hard
+
+"object-sizeof@npm:^1.6.3":
+  version: 1.6.3
+  resolution: "object-sizeof@npm:1.6.3"
+  dependencies:
+    buffer: ^5.6.0
+  checksum: a1195e0e0caa80504e7ff20da54c73b4ed57c1f36482743436c7014c615bdc1528f3751e928bb9efa6f1960cd7f039aeb44b19f9dda63686b9995e1bbe4538af
   languageName: node
   linkType: hard
 
