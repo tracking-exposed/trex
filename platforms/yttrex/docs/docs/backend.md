@@ -1,3 +1,9 @@
+---
+sidebar_position: 3
+title: Backend
+id: backend
+---
+
 import CodeBlock from '@theme/CodeBlock';
 
 **Build the backend for development:**
