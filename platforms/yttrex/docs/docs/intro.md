@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
-title: YT TrEx
 id: yttrex-intro
+sidebar: '@yttrex'
 ---
 
 # Introduction

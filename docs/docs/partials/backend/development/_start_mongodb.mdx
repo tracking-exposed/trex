@@ -1,0 +1,11 @@
+import CodeBlock from '@theme/CodeBlock';
+
+Before running the command that spins the server, be sure to startup `mongo` on port `27017`.
+This can be easily done with the given `docker-compose` configuration present in the repo, by running
+
+<CodeBlock language="bash">
+  # start up mongo db <br />
+  docker-compose up -d mongo <br />
+  # create the indexes for `yttrex` db <br />
+  docker-compose up -d mongo-{props.platformPrefix}-indexes
+</CodeBlock>
