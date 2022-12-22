@@ -9,6 +9,7 @@ import { makeBackend } from '@shared/backend';
 import { RouteContext } from '@shared/backend/types';
 import * as mongo3 from '@shared/providers/mongo.provider';
 import { GetLogger } from '@shared/logger';
+import { errorLogger } from '@shared/backend/utils/errorLogger';
 
 export const appLogger = GetLogger('tktrex');
 
@@ -143,5 +144,7 @@ export const makeApp = async (
     res.status(404);
     res.send('URL not found');
   });
+
+  app.use(errorLogger(appLogger));
   return app;
 };
