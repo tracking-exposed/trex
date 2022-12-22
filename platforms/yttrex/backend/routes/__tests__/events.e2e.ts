@@ -30,9 +30,8 @@ describe('Event Routes', function () {
         .expect(200);
     });
     test('Should return a well formed error when request is too large', async () => {
-      console.log('generating large json');
       const eventData = fc
-        .sample(fc.json(100), 1000)
+        .sample(fc.json({ maxDepth: 100 }), 1000)
         .reduce((acc, j, i) => ({ ...acc, [i]: JSON.parse(j) }), {});
 
       const payload: any = Array.from({ length: 1000 }).reduce<any>(
@@ -40,7 +39,6 @@ describe('Event Routes', function () {
         {}
       );
 
-      console.log('Rough size of json object', sizeof(payload));
       const signature = await foldTEOrThrow(
         bs58.makeSignature(JSON.stringify(payload), keypair.secretKey)
       );
