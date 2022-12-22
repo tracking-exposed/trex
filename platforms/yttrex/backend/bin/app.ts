@@ -2,14 +2,15 @@
 import { makeBackend } from '@shared/backend';
 import { MakeAppContext } from '@shared/backend/app';
 import { RouteContext } from '@shared/backend/types';
+import { routeHandleMiddleware } from '@shared/backend/utils/routeHandlerMiddleware';
 import { GetLogger } from '@shared/logger';
+import * as mongo3 from '@shared/providers/mongo.provider';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
 import { apiList } from '../lib/api';
-import * as mongo3 from '@shared/providers/mongo.provider';
 import { DeleteRecommendationRoute } from '../routes/youchoose/deleteRecommendation.route';
-import { routeHandleMiddleware } from '@shared/backend/utils/routeHandlerMiddleware';
+import { errorLogger } from '@shared/backend/utils/errorLogger';
 
 const logger = GetLogger('api');
 
@@ -24,8 +25,12 @@ export const makeApp = async (
 
   app.use(cors());
   app.options('/api/', cors());
-  app.use(bodyParser.json({ limit: '6mb' }));
-  app.use(bodyParser.urlencoded({ limit: '6mb', extended: true }));
+  app.use(
+    bodyParser.json({
+      limit: '10mb',
+    })
+  );
+  app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
   // get a router instance from express
   const router = express.Router();
@@ -234,6 +239,8 @@ export const makeApp = async (
   });
 
   app.use(router);
+
+  app.use(errorLogger(logger));
 
   app.set('port', ctx.config.port);
 

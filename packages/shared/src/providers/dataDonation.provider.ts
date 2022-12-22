@@ -463,7 +463,10 @@ export const GetDataDonationProvider = (
       );
 
       void pipe(
-        bs58Provider.makeSignature(state.content, keypair.secretKey),
+        bs58Provider.makeSignature(
+          JSON.stringify(state.content),
+          keypair.secretKey
+        ),
         TE.chain((signature) =>
           ctx.browser.sendAPIMessage(ctx.addEvent)({
             Headers: {
