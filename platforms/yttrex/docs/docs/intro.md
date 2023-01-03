@@ -5,3 +5,5 @@ id: yttrex-intro
 ---
 
 # Introduction
+
+Welcome to the Youtube Scraper guide.

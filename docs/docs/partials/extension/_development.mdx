@@ -6,14 +6,7 @@ import CodeBlock from '@theme/CodeBlock';
 
 
 ### Prerequisites
-
-<ul>
-  <li>
-    <a href="backend">
-      @{props.platformPrefix}trex/backend
-    </a>{" "}up and running
-  </li>
-</ul>
+* <a href="backend">@{props.platformPrefix}trex/backend</a> up and running
 
 ### Run "watch" mode
 
@@ -23,4 +16,7 @@ To start developing the extension you need to compile the source code with `webp
   yarn {props.platformPrefix}:ext watch
 </CodeBlock>
 
-<p>then, you can open your browser's development panel and load the extension from the output folder <i>{props.platformPrefix}</i>.</p>
+### Load the extension
+
+In your browser's development panel or in your extension manager, load the extension from the <i>{props.platformPrefix}</i> output folder. To do that, you will need to navigate to `platforms/yttrex/extension/build` and load the extension from that folder.
+
