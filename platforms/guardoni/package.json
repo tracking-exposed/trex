@@ -26,7 +26,8 @@
     "tdd": "jest --watch --verbose",
     "cli-yt-test-videos": "ts-node ./scripts/cli-yt-test-videos.mjs",
     "cli-yt-test-home": "ts-node ./scripts/cli-yt-test-home-fixures.mjs",
-    "cli-yt-test-from-fixtures": "ts-node ./scripts/cli-yt-test-home-fixures.mjs"
+    "cli-yt-test-from-fixtures": "ts-node ./scripts/cli-yt-test-home-fixures.mjs",
+    "typedoc": "typedoc"
   },
   "bin": {
     "cli": "./bin/guardoni-cli.js"

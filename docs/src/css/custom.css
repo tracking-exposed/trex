@@ -24,7 +24,7 @@
   --ifm-color-primary-light: #67c8bf;
   --ifm-color-primary-lighter: #71ccc3;
   --ifm-color-primary-lightest: #90d7d0;
-  --ifm-code-font-size: 95%;
+  --ifm-code-font-size: 75%;
   --ifm-footer-background-color: #53c1b6;
   --ifm-footer-color: var(--white);
   --ifm-footer-title-color: var(--black);
@@ -101,4 +101,10 @@ h1{
 }
 h2 {
   padding-top: 4%;
+}
+
+@media (min-width: 997px) {
+  .docItemCol_---node_modules-\@docusaurus-theme-classic-lib-theme-DocItem-Layout-styles-module {
+    max-width: 80% !important;
+  }
 }

@@ -1,0 +1,18 @@
+.env_var{
+    margin-bottom: 40px !important;
+}
+.env_var > span{
+    background: #25c2a0;
+    color: #1b1b1b;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-weight: bold;
+}
+
+.env_var code{
+    margin-left: 5px;
+}
+
+.env_var li{
+    list-style: none;
+}

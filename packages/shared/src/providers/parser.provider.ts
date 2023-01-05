@@ -1,3 +1,6 @@
+/**
+ * @module parser
+ */
 import { formatDistance } from 'date-fns';
 import differenceInMinutes from 'date-fns/differenceInMinutes';
 import subMinutes from 'date-fns/subMinutes';
@@ -18,9 +21,9 @@ export interface ParserConfiguration {
 /**
  * The parser function
  *
- * @typeParam S - The source
- * @typeParam M - The metadata
- * @typeParam C - The configuration
+ * @typeParam S - the io-ts codec type for source
+ * @typeParam M - the io-ts codec type for metadata
+ * @typeParam C - the parser configuration type
  */
 export type ParserFn<S, M, C> = (
   entry: ContributionWithDOM<S>,
@@ -46,9 +49,8 @@ export interface LastContributions<T> {
 /**
  * The input given to the pipeline
  *
- * @typeParam S - The source
- * @typeParam M - The metadata
- * @typeParam PP - The parser functions map
+ * @typeParam S - the io-ts codec type for source
+ * @typeParam PP - the typeof of the map of string => parser
  */
 export interface PipelineInput<
   S,
@@ -99,6 +101,13 @@ export interface ExecuteParams {
   htmlAmount: number;
 }
 
+/**
+ * The execution success output
+ *
+ * @typeParam S - the io-ts codec type for source
+ * @typeParam M - the io-ts codec type for metadata
+ * @typeParam PP - the typeof of the map of string => parser
+ */
 interface ExecutionOutputSuccess<
   S,
   M,
@@ -108,6 +117,10 @@ interface ExecutionOutputSuccess<
   payload: Array<PipelineOutput<S, M, PP>>;
 }
 
+/**
+ * The execution success output
+ *
+ */
 interface ExecutionOutputError {
   type: 'Error';
   payload: any;
@@ -116,9 +129,9 @@ interface ExecutionOutputError {
 /**
  * The output of the execution
  *
- * @typeParam S - The source
- * @typeParam M - The metadata
- * @typeParam PP - The parsers map
+ * @typeParam S - the io-ts codec type for source
+ * @typeParam M - the io-ts codec type for metadata
+ * @typeParam PP - the typeof of the map of string => parser
  *
  * @return An object where `type` can be `Success` or `Error` and the payload contains the real result
  */
@@ -142,6 +155,10 @@ export interface ParserProviderOpts extends ExecuteParams {
 
 /**
  * The parser provider interface
+ *
+ * @typeParam S - the io-ts codec type for source
+ * @typeParam M - the io-ts codec type for metadata
+ * @typeParam PP - the typeof of the map of string => parser
  *
  */
 export interface ParserProvider<
@@ -191,12 +208,19 @@ export type GetContributionsFn<S> = (
 /**
  * Get metadata function
  *
- * @typeParam S - Source
+ * @typeParam S - the io-ts codec type for source
+ * @typeParam M - the io-ts codec type for metadata
+ * @param S - the source
+ * @returns a Promise of M
  */
 export type GetMetadataFn<S, M> = (e: S) => Promise<M | null>;
 
 /**
  * Build metadata function
+ *
+ * @typeParam S - the io-ts codec type for source
+ * @typeParam M - the io-ts codec type for metadata
+ * @typeParam PP - the typeof of the map of string => parser
  *
  * @param e The payload produced by the pipeline
  * @param metadata - The metadata already present in the DB, if any
@@ -717,10 +741,16 @@ let lastExecution: Date;
 let computedFrequency = 10;
 
 /**
+ * Create a parser instance
  *
- * @param name
+ * @typeParam S - the io-ts codec type for source
+ * @typeParam M - the io-ts codec type for metadata
+ * @typeParam C - the parser configuration type
+ * @typeParam PP - the typeof of the map of string => parser
+ *
+ * @param name - The parser name
  * @param ctx - The parser context {@link ParserProviderContext}
- * @returns
+ * @returns a {@link ParserProvider} instance
  */
 export const GetParserProvider = <
   S extends t.Mixed,

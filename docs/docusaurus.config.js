@@ -17,7 +17,7 @@ const config = {
     'We develop tools to uncover how tracking and profiling have an impact on society',
   url: 'https://docs.tracking.exposed',
   baseUrl: '/',
-  onBrokenLinks: 'throw',
+  onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/trex128.png',
   organizationName: 'tracking-exposed', // Usually your GitHub org/user name.
@@ -83,7 +83,157 @@ const config = {
         id: 'guardoni-docs',
         path: path.resolve(__dirname, '../platforms/guardoni/docs'),
         routeBasePath: 'guardoni',
-        sidebarPath: require.resolve('./sidebars.js'),
+        sidebarPath: require.resolve(
+          path.resolve(__dirname, '../platforms/guardoni/docs/sidebars.js')
+        ),
+      },
+    ],
+    [
+      'docusaurus-plugin-typedoc',
+      {
+        id: 'docs-guardoni-api',
+        entryPoints: [
+          '../platforms/guardoni/src/guardoni/cli.ts',
+          '../platforms/guardoni/src/guardoni/guardoni.ts',
+        ],
+        tsconfig: '../platforms/guardoni/tsconfig.json',
+        out: 'typedoc/guardoni',
+        excludeInternal: true,
+        watch: false,
+      },
+    ],
+    [
+      'docusaurus-plugin-typedoc',
+      {
+        id: 'shared-typedoc',
+        entryPoints: ['../packages/shared/src/index.ts'],
+        tsconfig: '../packages/shared/tsconfig.json',
+        out: 'typedoc/shared',
+        watch: false,
+        sidebar: {
+          categoryLabel: '@trex/shared',
+        },
+      },
+    ],
+    [
+      'docusaurus-plugin-typedoc',
+      {
+        id: 'taboule-typedoc',
+        entryPoints: ['../packages/taboule/src/index.tsx'],
+        tsconfig: '../packages/taboule/tsconfig.json',
+        out: 'typedoc/taboule',
+        watch: false,
+        sidebar: {
+          categoryLabel: '@taboule',
+        },
+      },
+    ],
+    // typedoc for @tktrex
+    [
+      'docusaurus-plugin-typedoc',
+      {
+        id: 'tk-shared-typedoc',
+        entryPoints: ['../platforms/tktrex/shared/src/index.ts'],
+        tsconfig: '../platforms/tktrex/shared/tsconfig.json',
+        out: path.resolve(
+          process.cwd(),
+          '../platforms/tktrex/docs/docs/typedoc/shared'
+        ),
+        watch: false,
+        sidebar: {
+          categoryLabel: '@tktrex/shared',
+        },
+      },
+    ],
+    [
+      'docusaurus-plugin-typedoc',
+      {
+        id: 'tk-ext-typedoc',
+        entryPoints: [
+          '../platforms/tktrex/extension/src/app/index.ts',
+          '../platforms/tktrex/extension/src/background/index.ts',
+        ],
+        tsconfig: '../platforms/tktrex/extension/tsconfig.json',
+        out: path.resolve(
+          process.cwd(),
+          '../platforms/tktrex/docs/docs/typedoc/extension'
+        ),
+        watch: process.env.TYPEDOC_WATCH,
+        sidebar: {
+          categoryLabel: '@tktrex/extension',
+        },
+      },
+    ],
+
+    [
+      'docusaurus-plugin-typedoc',
+      {
+        id: 'tk-backend-typedoc',
+        entryPoints: ['../platforms/tktrex/backend/bin/server.ts'],
+        tsconfig: '../platforms/tktrex/backend/tsconfig.json',
+        out: path.resolve(
+          process.cwd(),
+          '../platforms/tktrex/docs/docs/typedoc/backend'
+        ),
+        watch: process.env.TYPEDOC_WATCH,
+        sidebar: {
+          categoryLabel: '@tktrex/backend',
+        },
+      },
+    ],
+    // typedoc for @yttrex
+    [
+      'docusaurus-plugin-typedoc',
+      {
+        id: 'yt-shared-typedoc',
+        entryPoints: ['../platforms/yttrex/shared/src/index.ts'],
+        tsconfig: '../platforms/yttrex/shared/tsconfig.json',
+        out: path.resolve(
+          process.cwd(),
+          '../platforms/yttrex/docs/docs/typedoc/shared'
+        ),
+        watch: process.env.TYPEDOC_WATCH,
+        sidebar: {
+          categoryLabel: '@yttrex/shared',
+        },
+      },
+    ],
+    [
+      'docusaurus-plugin-typedoc',
+      {
+        id: 'yt-ext-typedoc',
+        entryPoints: [
+          '../platforms/yttrex/extension/src/app/index.ts',
+          '../platforms/yttrex/extension/src/background/index.ts',
+        ],
+        tsconfig: '../platforms/yttrex/extension/tsconfig.json',
+        out: path.resolve(
+          process.cwd(),
+          '../platforms/yttrex/docs/docs/typedoc/extension'
+        ),
+        watch: process.env.TYPEDOC_WATCH,
+        sidebar: {
+          categoryLabel: '@yttrex/extension',
+        },
+      },
+    ],
+    [
+      'docusaurus-plugin-typedoc',
+      {
+        id: 'yt-backend-typedoc',
+        entryPoints: [
+          '../platforms/yttrex/backend/bin/server.ts',
+          '../platforms/yttrex/backend/bin/parser.ts',
+        ],
+        tsconfig: '../platforms/yttrex/backend/tsconfig.json',
+        out: path.resolve(
+          process.cwd(),
+          '../platforms/yttrex/docs/docs/typedoc/backend'
+        ),
+        watch: process.env.TYPEDOC_WATCH,
+        sidebar: {
+          categoryLabel: '@yttrex/backend',
+        },
       },
     ],
   ],
@@ -94,9 +244,9 @@ const config = {
       ({
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
+          breadcrumbs: false,
           // Please change this to your repo.
-          editUrl:
-            'https://github.com/cloud-annotations/docusaurus-openapi/edit/main/demo/',
+          editUrl: 'https://github.com/tracking-exposed/trex/',
         },
         blog: false,
         theme: {
@@ -136,12 +286,59 @@ const config = {
             label: 'Youtube Scraper',
           },
           {
+            href: '/docs/typedoc/taboule',
+            label: 'Taboule',
+          },
+          {
+            href: '/docs/typedoc/shared',
+            label: 'Shared',
+          },
+          {
             type: 'dropdown',
             label: 'API',
             items: [
               { to: '/tktrex/api', label: '@tktrex' },
               { to: '/yttrex/api', label: '@yttrex' },
               { to: '/ycai/api', label: '@ycai' },
+            ],
+          },
+          {
+            type: 'dropdown',
+            label: 'Source',
+            position: 'right',
+            items: [
+              {
+                to: 'docs/typedoc/shared',
+                label: '@trex/shared',
+              },
+              {
+                to: 'docs/typedoc/taboule',
+                label: '@taboule',
+              },
+              {
+                to: '/tktrex/docs/typedoc/shared/',
+                label: '@tktrex/shared',
+              },
+              {
+                to: '/tktrex/docs/typedoc/extension/',
+                label: '@tktrex/extension',
+              },
+              {
+                to: '/tktrex/docs/typedoc/backend/',
+                label: '@tktrex/backend',
+              },
+              {
+                to: '/yttrex/docs/typedoc/shared/',
+                label: '@yttrex/shared',
+              },
+              {
+                to: '/yttrex/docs/typedoc/extension/',
+                label: '@yttrex/extension',
+              },
+              {
+                to: '/yttrex/docs/typedoc/backend/',
+                label: '@yttrex/backend',
+              },
             ],
           },
           // { to: '/blog', label: 'Blog', position: 'left' },

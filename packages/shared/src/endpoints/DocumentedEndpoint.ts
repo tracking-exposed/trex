@@ -12,6 +12,11 @@ export interface DocsOpts {
   tags: string[];
 }
 
+/**
+ * Endpoint with documentation
+ *
+ * @typeParam M - The {@link HTTPMethod}
+ */
 export type DocumentedEndpoint<
   M extends HTTPMethod,
   O extends Codec<any, any, any>,
@@ -56,6 +61,13 @@ export type MinimalEndpoint =
 export type DocumentedEndpointInstance<E extends MinimalEndpoint> =
   EndpointInstance<E> & DocsOpts;
 
+/**
+ * Create an endpoint for documentation
+ *
+ * @typeParam M - The {@link HTTPMethod}
+ * @param param0
+ * @returns
+ */
 export const DocumentedEndpoint = <
   M extends HTTPMethod,
   O extends Codec<any, any, any>,

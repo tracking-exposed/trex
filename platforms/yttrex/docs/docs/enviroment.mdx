@@ -1,0 +1,218 @@
+---
+sidebar_position: 4
+title: Enviroment Variables
+id: api
+---
+
+import style from './markdown-styles.module.css';
+
+<h2>Shared enviroment variables</h2>
+
+<p className={style.env_var}>
+  <span className="title">API_ROOT</span>
+  <div>
+    Points to the top level API URL.  
+    <div>
+      <strong>Default:</strong>
+      <ul>
+        <li>
+          Production:
+          <code>
+            <span>https://youtube.tracking.exposed/api</span>
+          </code>
+        </li>
+        <li>
+          Development:
+          <code>
+            <span>http://localhost:9000/api</span>
+          </code>
+        </li>
+      </ul>
+    </div>
+  </div>
+</p>
+<p className={style.env_var}>
+  <span className="title">WEB_ROOT
+</span>
+  <div>
+    Poins to the tracking exposed YT page.
+    <div>
+      <strong>Default:</strong>
+      <ul>
+        <li>
+          Production:
+          <code>
+            <span>https://youtube.tracking.exposed</span>
+          </code>
+        </li>
+        <li>
+          Development:
+          <code>
+            <span>http://localhost:1313</span>
+          </code>
+        </li>
+      </ul>
+    </div>
+  </div>
+</p>
+<p className={style.env_var}>
+  <span className="title">DATA_CONTRIBUTION_ENABLED</span>
+  <div>
+    Dictates if the extension should send data to the server.
+    <div>
+      <strong>Default:</strong>
+      <ul>
+        <li>
+          Production:
+          <code>
+            <span>false</span>
+          </code>
+        </li>
+        <li>
+          Development:
+          <code>
+            <span>true</span>
+          </code>
+        </li>
+      </ul>
+    </div>
+  </div>
+</p>
+<p className={style.env_var}>
+  <span className="title">FLUSH_INTERVAL</span>
+  <div>
+    How often the extension sends data to the server, measured in ms.
+    <div>
+      <strong>Default:</strong>
+      <ul>
+        <li>
+          Production:
+          <code>
+            <span>10000</span>
+          </code>
+        </li>
+        <li>
+          Development:
+          <code>
+            <span>4000</span>
+          </code>
+        </li>
+      </ul>
+    </div>
+  </div>
+</p>
+<p className={style.env_var}>
+  <span className="title">DEBUG</span>
+  <div>
+    Allows you to toggle the debug output for different parts of your module as well as the module as a whole.
+    <div>
+      <strong>Default:</strong>
+      <ul>
+        <li>
+          Production:
+          <code>
+            <span>@trex\*</span>
+          </code>
+        </li>
+        <li>
+          Development:
+          <code>
+            <span>@trex\*</span>
+          </code>
+        </li>
+      </ul>
+    </div>
+  </div>
+</p>
+
+<h2>Development enviroment variables</h2>
+
+<p className={style.env_var}>
+  <span className="title">BUNDLE_TARGET</span>
+  <div>
+    Allows you to configure the extension output depending on the browser.
+    <div>
+      <strong>Default:</strong>
+      <ul>
+        <li>
+          Development:
+          <code>
+            <span>firefox</span>
+          </code>
+        </li>
+      </ul>
+    </div>
+  </div>
+</p>
+<p className={style.env_var}>
+  <span className="title">BUILD_TRANSPILE_ONLY</span>
+  <div>
+    Avoids typescript type cheking on build.
+    <div>
+      <strong>Default:</strong>
+      <ul>
+        <li>
+          Development:
+          <code>
+            <span>true</span>
+          </code>
+        </li>
+      </ul>
+    </div>
+  </div>
+</p>
+<p className={style.env_var}>
+  <span className="title">NODE_ENV</span>
+  <div>
+    Used by Express to alter its own default behavior.
+    <div>
+      <strong>Default:</strong>
+      <ul>
+        <li>
+          Development:
+          <code>
+            <span>development</span>
+          </code>
+        </li>
+      </ul>
+    </div>
+  </div>
+</p>
+
+<h2>Guardoni enviroment variables</h2>
+
+<p className={style.env_var}>
+  <span className="title">PUBLIC_KEY</span>
+  <div>
+    Guardoni Public Key
+    <div>
+      <strong>Default:</strong>
+      <ul>
+        <li>
+          <code>
+            <span>H7AsuUszehN4qKTj2GYYwNNzkJVqUQBRo2wgKevzeUwx</span>
+          </code>
+        </li>
+      </ul>
+    </div>
+  </div>
+</p>
+
+<p className={style.env_var}>
+  <span className="title">SECRET_KEY</span>
+  <div>
+    Guardoni Secret Key
+    <div>
+      <strong>Default:</strong>
+      <ul>
+        <li>
+          <code>
+            <span>v6pyCC8TzKd1uq7LnGaLQDaZ4qmJwKCne7moXwr1EJthxne4sqBWPkHwqyH8QH5n9pNQGAGBeA9hZ1jwy4hUyeW
+</span>
+          </code>
+        </li>
+      </ul>
+    </div>
+  </div>
+</p>
+
