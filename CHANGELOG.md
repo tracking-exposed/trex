@@ -1,3 +1,9 @@
+## [2.8.2](https://github.com/tracking-exposed/trex/compare/v2.8.1...v2.8.2) (2023-01-13)
+
+### Fixes
+
+- **shared:** omit '\_id' field from metadata when upsert from parsing ([511c60d](https://github.com/tracking-exposed/trex/commit/511c60d1f9d629b167fbf12c8ebe65acfba1dc41))
+
 ## [2.8.1](https://github.com/tracking-exposed/trex/compare/v2.8.0...v2.8.1) (2022-12-06)
 
 - **tk:backend:** fixed mongo provider 'insertMany' typings and 'registerEmail' route handler export ([5d5c1ed](https://github.com/tracking-exposed/trex/commit/5d5c1ed09de5c538cbc0e3b9f32ac4e971ed70d0))
