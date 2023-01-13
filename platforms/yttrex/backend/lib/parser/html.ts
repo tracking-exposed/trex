@@ -87,11 +87,12 @@ export const getMetadata =
 export const updateMetadataAndMarkHTML =
   (db: ParserProviderContextDB): SaveResults<HTMLSource, Metadata> =>
   async (source, metadata) => {
+    const { _id, ...m }: any = metadata;
     const r = await db.api.upsertOne(
       db.write,
       getMetadataSchema(),
       { id: source.html.metadataId },
-      metadata
+      m
     );
 
     // parserLog.debug('Upsert metadata by %O: %O', { id: e.id }, r);
