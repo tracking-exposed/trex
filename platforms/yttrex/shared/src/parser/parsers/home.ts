@@ -50,7 +50,7 @@ function dissectSelectedVideo(
   const e = ee as any;
 
   try {
-    infos.textTitle = e.querySelector('#video-title-link').textContent;
+    infos.textTitle = e.querySelector('#video-title-link')?.textContent;
   } catch (error) {
     errorLog.push('Failure in textTitle: ' + error.message);
     infos.error = true;
