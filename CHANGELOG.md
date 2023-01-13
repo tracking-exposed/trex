@@ -1,3 +1,11 @@
+## [2.8.3](https://github.com/tracking-exposed/trex/compare/v2.8.2...v2.8.3) (2023-01-13)
+
+### Fixes
+
+- **tk:backend:** log request size when "PayloadTooLargeError" occurres ([6c728d1](https://github.com/tracking-exposed/trex/commit/6c728d165ad19e6dfe0cb2f85e718caa105eec1e))
+- **yt:backend:** log request size when "PayloadTooLargeError" occurres ([ed4d255](https://github.com/tracking-exposed/trex/commit/ed4d255fedfc693db84e63923cf0c3394cf7056f))
+- **yt:backend:** typo for mongodb indexes build, close [#774](https://github.com/tracking-exposed/trex/issues/774) ([#848](https://github.com/tracking-exposed/trex/issues/848)) ([50b3ced](https://github.com/tracking-exposed/trex/commit/50b3cedce40d382562289916fde8c25cde1d2bb1))
+
 ## [2.8.2](https://github.com/tracking-exposed/trex/compare/v2.8.1...v2.8.2) (2023-01-13)
 
 ### Fixes

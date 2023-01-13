@@ -35,5 +35,5 @@
     "mongodb": "^4.12.1",
     "ts-endpoint": "^2.0.0"
   },
-  "version": "2.8.2"
+  "version": "2.8.3"
 }
