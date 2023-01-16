@@ -22,6 +22,7 @@
     "dist:all": "scripts/dist-all.sh",
     "postinstall": "electron-builder install-app-deps",
     "prepack": "yarn build",
+    "google-search": "ts-node ./bin/google-search.ts",
     "check-stealth": "ts-node ./bin/check-stealth.ts",
     "tdd": "jest --watch --verbose",
     "cli-yt-test-videos": "ts-node ./scripts/cli-yt-test-videos.mjs",

@@ -26,7 +26,7 @@ export type LaunchOptions = puppeteer.LaunchOptions &
     extraPrefsFirefox?: Record<string, unknown>;
   };
 
-interface PuppeteerProviderContext {
+export interface PuppeteerProviderContext {
   logger: Logger;
   config: {
     loadFor: number;
