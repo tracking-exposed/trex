@@ -5,7 +5,7 @@ import bs58 from '@shared/providers/bs58.provider';
 import {
   GetParserProvider,
   ParserProviderContextDB,
-} from '@shared/providers/parser.provider';
+} from '@shared/providers/parser';
 import { fc } from '@shared/test';
 import { foldTEOrThrow } from '@shared/utils/fp.utils';
 import { sleep } from '@shared/utils/promise.utils';

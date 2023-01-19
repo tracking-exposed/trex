@@ -1,4 +1,4 @@
-import { ParserFn } from '@shared/providers/parser.provider';
+import { ParserFn } from '@shared/providers/parser';
 import { throwEitherError } from '@shared/utils/fp.utils';
 import { Nature } from '../../models/Nature';
 import { TKParserConfig } from '../config';

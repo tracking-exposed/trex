@@ -9,7 +9,7 @@ import {
   GetParserProvider,
   ParserProviderContext,
   wrapDissector,
-} from '../parser.provider';
+} from '../parser/parser.provider';
 
 const logger = GetLogger('parser-spec');
 
@@ -112,7 +112,7 @@ describe('Parser Provider', () => {
 
     const output = getSuccessfulOutput<
       Contribution,
-      Metadata,
+      any,
       any,
       { [key: string]: any }
     >(
@@ -134,9 +134,8 @@ describe('Parser Provider', () => {
 
     expect(output).toMatchObject({
       [source.id.substring(0, 6)]: {
-        ...metadata,
         failures: '[]',
-        nature: { type: metadata.type },
+        nature: metadata.type,
         count: JSON.stringify({ metadata: 1, source: 1 }),
       },
     });

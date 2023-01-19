@@ -1,4 +1,4 @@
-import { ParserFn } from '@shared/providers/parser.provider';
+import { ParserFn } from '@shared/providers/parser';
 import _ from 'lodash';
 import D from 'debug';
 import { HTMLSource } from '../source';

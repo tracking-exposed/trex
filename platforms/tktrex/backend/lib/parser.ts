@@ -4,7 +4,7 @@ import {
   GetMetadataFn,
   ParserProviderContextDB,
   SaveResults,
-} from '@shared/providers/parser.provider';
+} from '@shared/providers/parser';
 import { sanitizeHTML } from '@shared/utils/html.utils';
 import { TKMetadata } from '@tktrex/shared/models/metadata';
 import { TKParserConfig } from '@tktrex/shared/parser/config';

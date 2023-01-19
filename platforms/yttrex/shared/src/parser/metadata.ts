@@ -1,4 +1,4 @@
-import { BuildMetadataFn } from '@shared/providers/parser.provider';
+import { BuildMetadataFn } from '@shared/providers/parser';
 import { isValid } from 'date-fns';
 import { Parsers } from './parsers';
 import { HTMLSource } from './source';

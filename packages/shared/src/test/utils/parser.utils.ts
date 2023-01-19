@@ -10,7 +10,7 @@ import {
   ParserFn,
   ParserProviderContext,
   printResultOutput,
-} from '../../providers/parser.provider';
+} from '../../providers/parser/parser.provider';
 
 /**
  * Read fixtures file from path

@@ -5,7 +5,7 @@ import {
   LastContributions,
   ParserProviderContextDB,
   SaveResults
-} from '@shared/providers/parser.provider';
+} from '@shared/providers/parser';
 import { sanitizeHTML } from '@shared/utils/html.utils';
 import { Ad } from '@yttrex/shared/models/Ad';
 import { LeafParsers } from '@yttrex/shared/parser/parsers';

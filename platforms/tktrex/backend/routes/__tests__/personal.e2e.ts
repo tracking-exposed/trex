@@ -6,7 +6,7 @@ import bs58 from '@shared/providers/bs58.provider';
 import {
   GetParserProvider,
   ParserProvider,
-} from '@shared/providers/parser.provider';
+} from '@shared/providers/parser';
 import { fc } from '@shared/test';
 import {
   readFixtureJSON,

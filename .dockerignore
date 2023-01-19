@@ -7,3 +7,5 @@ node_modules
 docker
 !docker/guardoni/guardoni.config.json
 #.yarn/cache
+**/__tests__
+**/fixtures

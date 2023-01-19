@@ -1,5 +1,5 @@
 import { trexLogger } from '@shared/logger';
-import { ParserFn } from '@shared/providers/parser.provider';
+import { ParserFn } from '@shared/providers/parser';
 import _ from 'lodash';
 import moment from 'moment';
 import { HomeMetadata, ParsedInfo } from '../../models/metadata/Metadata';

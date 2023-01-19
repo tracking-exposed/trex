@@ -4,7 +4,7 @@ import {
   GetMetadataFn,
   ParserProviderContextDB,
   SaveResults,
-} from '@shared/providers/parser.provider';
+} from '@shared/providers/parser';
 import { sanitizeHTML } from '@shared/utils/html.utils';
 import { Metadata } from '@yttrex/shared/models/metadata/Metadata';
 import { Supporter } from '@yttrex/shared/models/Supporter';
@@ -95,7 +95,7 @@ export const updateMetadataAndMarkHTML =
       m
     );
 
-    // parserLog.debug('Upsert metadata by %O: %O', { id: e.id }, r);
+    // console.log('Upsert metadata by %O: %O', r);
 
     const u = await db.api.updateOne(
       db.write,
@@ -107,6 +107,6 @@ export const updateMetadataAndMarkHTML =
     return {
       metadata,
       source,
-      count: { metadata: r.upsertedCount, source: u.modifiedCount },
+      count: { metadata: r.modifiedCount, source: u.modifiedCount },
     };
   };

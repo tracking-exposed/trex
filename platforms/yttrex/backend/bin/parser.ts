@@ -16,12 +16,13 @@ import {
   getMetadata,
 } from '../lib/parser/html';
 import { parserConfig } from '@yttrex/shared/parser/config';
-import { GetParserProvider } from '@shared/providers/parser.provider';
+import { GetParserProvider } from '@shared/providers/parser';
 import { HTMLSource } from '@yttrex/shared/parser/source';
 import { toMetadata } from '@yttrex/shared/parser/metadata';
 import { parsers } from '@yttrex/shared/parser/parsers';
 import path from 'path';
 import { MetadataDB } from '../models/metadata';
+import D from 'debug';
 
 nconf.argv().env().file({ file: 'config/settings.json' });
 
@@ -34,6 +35,8 @@ const FIXTURES_FOLDER = path.resolve(process.cwd(), '__tests__/fixtures/htmls');
  */
 
 const run = async (): Promise<void> => {
+  D.enable(process.env.PARSER_DEBUG ?? process.env.DEBUG ?? '');
+
   const htmlAmount = _.parseInt(nconf.get('amount'))
     ? _.parseInt(nconf.get('amount'))
     : AMOUNT_DEFAULT;

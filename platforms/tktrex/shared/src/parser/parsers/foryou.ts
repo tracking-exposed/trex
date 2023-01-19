@@ -1,4 +1,4 @@
-import { ParserFn } from '@shared/providers/parser.provider';
+import { ParserFn } from '@shared/providers/parser';
 import D from 'debug';
 import { MediaFile } from '../../models/metadata/MediaFile';
 import { TKParserConfig } from '../config';

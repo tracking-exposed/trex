@@ -1,5 +1,5 @@
 import { map } from 'lodash';
-import { ParserFn } from '@shared/providers/parser.provider';
+import { ParserFn } from '@shared/providers/parser';
 import type { HTMLSource } from '../source';
 import type { TKParserConfig } from '../config';
 import D from 'debug';
