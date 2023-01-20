@@ -65,18 +65,47 @@ services:
     tty: true # docker run -t
 
   yt-backend:
+    image: trex:yt-backend
     build:
       dockerfile: Dockerfile.ytbackend
       context: .
-    container_name: yt-backend
+
+  yt-server:
+    image: trex:yt-backend
+    container_name: yt-server
+    command: yarn start
     ports:
       - '9000:9000'
+    env_file:
+      - ./platforms/yttrex/backend/.env
     environment:
-      - DEBUG=*
+      - BACKEND_DEBUG=yttrex*,@trex*
+      - mongoHost=mongodb
+    depends_on:
+      - yt-backend
+      - mongodb
+      - mongo-yt-indexes
+    deploy:
+      resources:
+        limits:
+          memory: 1000M
+
+  yt-parser:
+    image: trex:yt-backend
+    container_name: yt-parser
+    command: yarn parserv
+    env_file:
+      - ./platforms/yttrex/backend/.env
+    environment:
+      - PARSER_DEBUG=@trex:htmls:*,-@trex:htmls:debug
       - mongoHost=mongodb
     depends_on:
       - mongodb
       - mongo-yt-indexes
+    deploy:
+      resources:
+        limits:
+          memory: 2048M
 
   tk-backend:
     build:

@@ -1,6 +1,14 @@
+const dotenv = require('dotenv');
+const path = require('path');
+const fs = require('fs');
 const { commonENV } = require('./ecosystem.config');
 
+const envDot = dotenv.parse(
+  fs.readFileSync(path.resolve(__dirname, '.env'), 'utf-8')
+);
+
 const env = {
+  ...envDot,
   ...commonENV,
 };
 
@@ -32,7 +40,8 @@ const yt = {
     name: 'yt:parserv:watch',
     namespace: 'yt:backend',
     cwd: __dirname,
-    script: 'yarn parserv:watch --minutesago 60',
+    script:
+      'NODE_OPTIONS=--max-old-space-size=2048 yarn parserv:watch --minutesago 60',
     watch: false,
     env,
     env_test: testEnv,

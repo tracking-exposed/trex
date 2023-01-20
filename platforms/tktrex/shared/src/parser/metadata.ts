@@ -1,4 +1,4 @@
-import { BuildMetadataFn } from '@shared/providers/parser.provider';
+import { BuildMetadataFn } from '@shared/providers/parser';
 import _ from 'lodash';
 import { TKMetadata } from '../models/metadata';
 import { TKParsers } from './parsers';

@@ -29,6 +29,33 @@
       },
       "args": ["."],
       "outputCapture": "std"
+    },
+    {
+      "type": "node",
+      "request": "attach",
+      "name": "Attach to yt:server:watch (yt:watch)",
+      "protocol": "inspector",
+      "port": 4320,
+      "restart": true,
+      "cwd": "${workspaceRoot}/platforms/yttrex/backend"
+    },
+    {
+      "type": "node",
+      "request": "attach",
+      "name": "Attach to yt:parserv:watch",
+      "protocol": "inspector",
+      "port": 4321,
+      "restart": true,
+      "cwd": "${workspaceRoot}/platforms/yttrex/backend"
+    },
+    {
+      "type": "node",
+      "request": "attach",
+      "name": "Attach to yt:leaveserv:watch",
+      "protocol": "inspector",
+      "port": 4322,
+      "restart": true,
+      "cwd": "${workspaceRoot}/platforms/yttrex/backend"
     }
   ]
 }

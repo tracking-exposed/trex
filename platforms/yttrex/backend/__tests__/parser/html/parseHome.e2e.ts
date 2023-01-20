@@ -156,6 +156,7 @@ describe('Parser: home', () => {
                 thumbnailHref,
                 recommendedRelativeSeconds,
                 publicationTime,
+                elems,
                 ...s
               }) => ({
                 ...s,

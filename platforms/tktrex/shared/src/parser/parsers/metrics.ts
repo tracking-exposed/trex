@@ -1,4 +1,4 @@
-import { ParserFn } from '@shared/providers/parser.provider';
+import { ParserFn } from '@shared/providers/parser';
 import { HTMLSource } from '../source';
 import { Metrics } from '../../models/metadata/Metrics';
 import { TKParserConfig } from '../config';

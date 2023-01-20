@@ -9,7 +9,7 @@ nconf.argv().env().file({ file: 'config/settings.json' });
 
 import { FixtureReporter } from '@shared/parser/reporters/FixtureReporter';
 import * as mongo3 from '@shared/providers/mongo.provider';
-import { GetParserProvider } from '@shared/providers/parser.provider';
+import { GetParserProvider } from '@shared/providers/parser';
 import { TKMetadata } from '@tktrex/shared/models/metadata';
 import { parsers } from '@tktrex/shared/parser/parsers';
 import { HTMLSource } from '@tktrex/shared/parser/source';

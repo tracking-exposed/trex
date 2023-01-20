@@ -1,7 +1,7 @@
 import {
   ContributionWithDOM,
   ParserFn,
-} from '@shared/providers/parser.provider';
+} from '@shared/providers/parser';
 import D from 'debug';
 import { HTMLSource } from '../source';
 import { TKParserConfig } from '../config';

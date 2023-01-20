@@ -1,4 +1,4 @@
-import { ParserFn } from '@shared/providers/parser.provider';
+import { ParserFn } from '@shared/providers/parser';
 import { Ad } from '../../models/Ad';
 import { Leaf } from '../../models/Leaf';
 import { leafSelectors } from '../selectors';

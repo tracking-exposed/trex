@@ -1,5 +1,5 @@
 import { trexLogger } from '@shared/logger';
-import { ParserFn } from '@shared/providers/parser.provider';
+import { ParserFn } from '@shared/providers/parser';
 import _ from 'lodash';
 import moment from 'moment';
 import { HomeMetadata, ParsedInfo } from '../../models/metadata/Metadata';
@@ -298,7 +298,8 @@ function getSelectedAndSections(
       if (!_.size(e.textContent) || !_.size(_.trim(e.textContent ?? undefined)))
         return null;
 
-      const splits = D.querySelector('body')?.outerHTML.split(e.outerHTML);
+      const splits = D.firstElementChild?.outerHTML.split(e.outerHTML);
+
       return {
         offset: _.size(_.first(splits)),
         splits: _.size(splits),
@@ -322,7 +323,7 @@ function getSelectedAndSections(
     const thumbnailHref = shared.getThumbNailHref(e);
 
     try {
-      const ubication = D.querySelector('body')?.outerHTML.indexOf(e.outerHTML);
+      const ubication = D.firstElementChild?.outerHTML.indexOf(e.outerHTML);
       sections.push({ i, offset: ubication });
       homeLog.debug('Section %s', i, thumbnailHref);
       const videoInfo = dissectSelectedVideo(

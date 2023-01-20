@@ -11,11 +11,9 @@ export const MetadataBase = t.type(
     href: t.string,
     /**
      * The supporter publicKey
-     *
-     * TODO: it may be replaced by the supporter id
      */
-    blang: t.union([t.string, t.null, t.undefined]),
     supporter: t.string,
+    blang: t.union([t.string, t.null, t.undefined]),
     researchTag: t.union([t.string, t.undefined]),
     experimentId: t.union([t.string, t.undefined]),
     /**
