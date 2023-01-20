@@ -562,7 +562,7 @@ export const executionLoop =
           stop,
           processedCounter
         );
-        ctx.log.info('Memory usage %O (MB)', getMemoryUsed());
+        ctx.log.debug('Memory usage %O (MB)', getMemoryUsed());
 
         let htmlFilter: Record<string, any> = {
           savingTime: {
