@@ -1,3 +1,17 @@
+## [2.8.4](https://github.com/tracking-exposed/trex/compare/v2.8.3...v2.8.4) (2023-01-20)
+
+- **deps:** bump decode-uri-component from 0.2.0 to 0.2.2 ([14f86a2](https://github.com/tracking-exposed/trex/commit/14f86a227bbe4bbbe323cb4ea3daec70145732be))
+- **deps:** bump json5 from 1.0.1 to 1.0.2 ([77be94e](https://github.com/tracking-exposed/trex/commit/77be94ed7103d06f8b2050c5c75a92fd24d2bd32))
+- **docs:** upgrade [@docusaurus](https://github.com/docusaurus)@2.2.0 ([#846](https://github.com/tracking-exposed/trex/issues/846)) ([c61bf53](https://github.com/tracking-exposed/trex/commit/c61bf539bbe84f43292faa456f5fd76f665a8a0e))
+- **workspace:** interactive "from-zip" docker container ([#818](https://github.com/tracking-exposed/trex/issues/818)) ([fcf0b4d](https://github.com/tracking-exposed/trex/commit/fcf0b4d7dfe5e49fedf38912551577ce6df989a5))
+- **workspace:** upgrade ts-loader@^9.4.2, webpack-bundle-analyzer@^4.7.0 and webpack@^5.75.0 ([90a03ed](https://github.com/tracking-exposed/trex/commit/90a03ed4928d5c462ad0bfb9aca01a46ab1d0f07))
+
+### Fixes
+
+- **shared:** add errors UI for extension ([#830](https://github.com/tracking-exposed/trex/issues/830)) ([d77c3d7](https://github.com/tracking-exposed/trex/commit/d77c3d70c201c2c6d8b52ec1e0bc9ed9ce1394c0))
+- **shared:** replace 'jsdom' with 'linkedom' to prevent the parser from crashing for memory allocation failure ([#859](https://github.com/tracking-exposed/trex/issues/859)) ([8d4f9b3](https://github.com/tracking-exposed/trex/commit/8d4f9b32f3cd34bc4a4a4947533a0307a9668767))
+- **ycai:** disable deployment with rsync, close [#842](https://github.com/tracking-exposed/trex/issues/842) ([#844](https://github.com/tracking-exposed/trex/issues/844)) ([cbdc3f0](https://github.com/tracking-exposed/trex/commit/cbdc3f081c3bddd6fe573b8637fe508dcca5f66f))
+
 ## [2.8.3](https://github.com/tracking-exposed/trex/compare/v2.8.2...v2.8.3) (2023-01-13)
 
 ### Fixes
