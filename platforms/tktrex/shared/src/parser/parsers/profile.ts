@@ -1,5 +1,5 @@
 import { trexLogger } from '@shared/logger';
-import { ParserFn } from '@shared/providers/parser.provider';
+import { ParserFn } from '@shared/providers/parser';
 import { throwEitherError } from '@shared/utils/fp.utils';
 import _ from 'lodash';
 import { NativeVideoN } from '../../models/Nature';

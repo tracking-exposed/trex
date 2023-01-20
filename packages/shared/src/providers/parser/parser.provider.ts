@@ -4,9 +4,9 @@ import subMinutes from 'date-fns/subMinutes';
 import * as t from 'io-ts';
 import _ from 'lodash';
 import { MongoClient } from 'mongodb';
-import { Logger, trexLogger } from '../logger';
-import { sleep } from '../utils/promise.utils';
-import type * as mongo3 from './mongo.provider';
+import { Logger, trexLogger } from '../../logger';
+import { sleep } from '../../utils/promise.utils';
+import type * as mongo3 from '../mongo.provider';
 
 /**
  * The parser configuration
@@ -491,7 +491,8 @@ export const parseContributions =
       ctx.log.debug('Parsed %O', result);
       const oldMetadata = await ctx.getMetadata(entry);
       const metadata = ctx.buildMetadata(result, oldMetadata);
-      ctx.log.debug('Metadata %O', metadata);
+
+      // ctx.log.debug('Metadata %O', metadata);
 
       if (metadata) {
         const m = await ctx.saveResults(result.source, metadata);
@@ -512,6 +513,15 @@ export const parseContributions =
 
     return results;
   };
+
+const getMemoryUsed = (): NodeJS.MemoryUsage => {
+  const used = process.memoryUsage();
+  const memoryLog: any = {};
+  for (const key in used) {
+    memoryLog[key] = Math.round(((used as any)[key] / 1024 / 1024) * 100) / 100;
+  }
+  return memoryLog;
+};
 
 /* yes a better way might exist */
 let previousFrequency = 0;
@@ -552,6 +562,8 @@ export const executionLoop =
           stop,
           processedCounter
         );
+        ctx.log.info('Memory usage %O (MB)', getMemoryUsed());
+
         let htmlFilter: Record<string, any> = {
           savingTime: {
             $gt: lastExecution,
@@ -663,14 +675,14 @@ export const getSuccessfulOutput = <
 ): any => {
   return output.reduce((acc, { source, metadata, failures, log, count }) => {
     const index = getEntryId(source).substring(0, 6);
+    const { id, nature } = (metadata as any) ?? {};
+    const n: any = nature;
     return {
       ...acc,
       [index]: {
         ...log,
-        // log: JSON.stringify(log),
-        // findings: markOutputField(findings),
-        // metadata: (metadata as any)?.id ?? null,
-        ...metadata,
+        id,
+        nature: n?.nature?.type ?? n?.type,
         failures: JSON.stringify(
           Object.entries(failures).map(([key, value]) => ({
             [key]: value.message,

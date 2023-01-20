@@ -43,6 +43,5 @@ WORKDIR /app/platforms/yttrex/backend
 RUN yarn workspaces focus --production
 
 ENV key=fuffa
-ENV DEBUG=@trex*
 
 CMD ["yarn", "start"]

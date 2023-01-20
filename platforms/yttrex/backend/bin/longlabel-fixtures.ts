@@ -2,7 +2,7 @@
 import * as _ from 'lodash';
 import D from 'debug';
 import * as fs from 'fs';
-import { JSDOM } from 'jsdom';
+import { parseHTML } from 'linkedom';
 import nconf from 'nconf';
 import * as path from 'path';
 import mongo3 from '../../../../packages/shared/src/providers/mongo.provider';
@@ -30,17 +30,21 @@ async function main(): Promise<void> {
 
   const aaa = [] as object[];
   for (const nature of ['home', 'video', 'search']) {
-    const htmlobs = await mongo3.aggregate(mongoc as any, nconf.get('schema').htmls, [
-      { $match: { 'nature.type': nature } },
-      { $sort: { savingTime: -1 } },
-      { $limit: maxAmount },
-      { $skip: skipAmount },
-    ]);
+    const htmlobs = await mongo3.aggregate(
+      mongoc as any,
+      nconf.get('schema').htmls,
+      [
+        { $match: { 'nature.type': nature } },
+        { $sort: { savingTime: -1 } },
+        { $limit: maxAmount },
+        { $skip: skipAmount },
+      ]
+    );
 
     logger('htmls available for nature "%s" is %d', nature, htmlobs.length);
 
     htmlobs.forEach((html) => {
-      const jsdom = new JSDOM(sanitizeHTML(html.html)).window.document;
+      const jsdom = parseHTML(sanitizeHTML(html.html)).window.document;
       const labels = jsdom.querySelectorAll('[aria-label]');
       const worthy = _.uniq(
         _.reduce(

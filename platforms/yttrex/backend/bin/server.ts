@@ -28,6 +28,7 @@ if (!nconf.get('interface') || !nconf.get('port'))
 
 /* everything begins here, welcome */
 const start = async (): Promise<void> => {
+  debug.enable(process.env.BACKEND_DEBUG ?? process.env.DEBUG ?? '');
   const mongo = await mongo3.clientConnect();
 
   if (!mongo) {

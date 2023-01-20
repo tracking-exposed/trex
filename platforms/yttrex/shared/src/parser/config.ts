@@ -1,4 +1,4 @@
-import { ParserConfiguration } from '@shared/providers/parser.provider';
+import { ParserConfiguration } from '@shared/providers/parser';
 import nconf from 'nconf';
 
 export interface YTParserConfig extends ParserConfiguration {

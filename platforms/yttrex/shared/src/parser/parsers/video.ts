@@ -1,5 +1,5 @@
 import { trexLogger } from '@shared/logger';
-import { ParserFn } from '@shared/providers/parser.provider';
+import { ParserFn } from '@shared/providers/parser';
 import { sanitizeTextContent } from '@shared/utils/html.utils';
 import { parseISO } from 'date-fns';
 import * as t from 'io-ts';

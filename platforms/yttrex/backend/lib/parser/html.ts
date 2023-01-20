@@ -4,15 +4,15 @@ import {
   GetMetadataFn,
   ParserProviderContextDB,
   SaveResults,
-} from '@shared/providers/parser.provider';
+} from '@shared/providers/parser';
 import { sanitizeHTML } from '@shared/utils/html.utils';
 import { Metadata } from '@yttrex/shared/models/metadata/Metadata';
 import { Supporter } from '@yttrex/shared/models/Supporter';
 import { HTMLSource } from '@yttrex/shared/parser';
-import { JSDOM } from 'jsdom';
 import _ from 'lodash';
 import nconf from 'nconf';
 import { HTML } from '../../models/HTML';
+import { parseHTML } from 'linkedom';
 // import { trexLogger } from '@shared/logger';
 
 // const parserLog = trexLogger.extend('parser:html');
@@ -22,7 +22,7 @@ export const getMetadataSchema = (): string => nconf.get('schema').metadata;
 
 export const addDom: ContributionAndDOMFn<HTMLSource> = (e) => ({
   ...e,
-  jsdom: new JSDOM(sanitizeHTML(e.html.html)).window.document,
+  jsdom: parseHTML(sanitizeHTML(e.html.html)).window.document,
 });
 
 export const getLastHTMLs =
@@ -95,7 +95,7 @@ export const updateMetadataAndMarkHTML =
       m
     );
 
-    // parserLog.debug('Upsert metadata by %O: %O', { id: e.id }, r);
+    // console.log('Upsert metadata by %O: %O', r);
 
     const u = await db.api.updateOne(
       db.write,
@@ -107,6 +107,6 @@ export const updateMetadataAndMarkHTML =
     return {
       metadata,
       source,
-      count: { metadata: r.upsertedCount, source: u.modifiedCount },
+      count: { metadata: r.modifiedCount, source: u.modifiedCount },
     };
   };

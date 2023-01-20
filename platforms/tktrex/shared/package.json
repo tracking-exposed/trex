@@ -31,7 +31,7 @@
   "dependencies": {
     "fp-ts": "^2.11.9",
     "io-ts": "^2.2.16",
-    "linkedom": "^0.14.4",
+    "linkedom": "^0.14.21",
     "mongodb": "^4.12.1",
     "ts-endpoint": "^2.0.0"
   },

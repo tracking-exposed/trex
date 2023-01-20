@@ -1,4 +1,4 @@
-import { ParserFn } from '@shared/providers/parser.provider';
+import { ParserFn } from '@shared/providers/parser';
 import { TKParserConfig } from '../config';
 import { HTMLSource } from '../source';
 import D from 'debug';

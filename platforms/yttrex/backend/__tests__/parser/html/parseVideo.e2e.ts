@@ -1,6 +1,6 @@
 import { GetTest, Test } from '../../../tests/Test';
 
-import { ParserProviderContextDB } from '@shared/providers/parser.provider';
+import { ParserProviderContextDB } from '@shared/providers/parser';
 import {
   readFixtureJSON,
   readFixtureJSONPaths,

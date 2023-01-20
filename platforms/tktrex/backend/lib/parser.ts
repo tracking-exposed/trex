@@ -4,15 +4,15 @@ import {
   GetMetadataFn,
   ParserProviderContextDB,
   SaveResults,
-} from '@shared/providers/parser.provider';
+} from '@shared/providers/parser';
 import { sanitizeHTML } from '@shared/utils/html.utils';
 import { TKMetadata } from '@tktrex/shared/models/metadata';
 import { TKParserConfig } from '@tktrex/shared/parser/config';
 import { HTMLSource } from '@tktrex/shared/parser/source';
 import D from 'debug';
-import { JSDOM } from 'jsdom';
 import _ from 'lodash';
 import nconf from 'nconf';
+import { parseHTML } from 'linkedom';
 
 const debug = D('lib:parserchain');
 
@@ -35,7 +35,7 @@ export const parserConfig: TKParserConfig = {
 
 export const addDom: ContributionAndDOMFn<HTMLSource> = (e) => ({
   ...e,
-  jsdom: new JSDOM(sanitizeHTML(e.html.html)).window.document,
+  jsdom: parseHTML(sanitizeHTML(e.html.html)).window.document,
 });
 
 export const getLastHTMLs =
