@@ -4,13 +4,13 @@ import {
   GetMetadataFn,
   LastContributions,
   ParserProviderContextDB,
-  SaveResults
+  SaveResults,
 } from '@shared/providers/parser';
 import { sanitizeHTML } from '@shared/utils/html.utils';
 import { Ad } from '@yttrex/shared/models/Ad';
 import { LeafParsers } from '@yttrex/shared/parser/parsers';
 import { LeafSource } from '@yttrex/shared/parser/source';
-import { JSDOM } from 'jsdom';
+import { parseHTML } from 'linkedom';
 import _ from 'lodash';
 import nconf from 'nconf';
 
@@ -32,7 +32,7 @@ export const getMetadata =
 
 export const addDom: ContributionAndDOMFn<LeafSource> = (e) => ({
   ...e,
-  jsdom: new JSDOM(sanitizeHTML(e.html.html)).window.document,
+  jsdom: parseHTML(sanitizeHTML(e.html.html)).window.document,
 });
 
 /*
@@ -66,7 +66,7 @@ export const getLastLeaves =
       try {
         return {
           supporter: _.first(supporter),
-          jsdom: new JSDOM(sanitizeHTML(h.html)).window.document,
+          jsdom: parseHTML(sanitizeHTML(h.html)).window.document,
           html: h,
         };
       } catch (error) {

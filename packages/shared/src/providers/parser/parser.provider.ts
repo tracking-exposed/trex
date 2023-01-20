@@ -491,7 +491,8 @@ export const parseContributions =
       ctx.log.debug('Parsed %O', result);
       const oldMetadata = await ctx.getMetadata(entry);
       const metadata = ctx.buildMetadata(result, oldMetadata);
-      ctx.log.debug('Metadata %O', metadata);
+
+      // ctx.log.debug('Metadata %O', metadata);
 
       if (metadata) {
         const m = await ctx.saveResults(result.source, metadata);
