@@ -1,3 +1,13 @@
+## [2.8.5](https://github.com/tracking-exposed/trex/compare/v2.8.4...v2.8.5) (2023-05-24)
+
+### Fixes
+
+- actions/cache@v3 option for cross os archive [skip ci] ([52addd8](https://github.com/tracking-exposed/trex/commit/52addd8d1028f9b442bc969590e996c3ddcbba3c))
+- **shared:** use 'debug' log level for parser memory usage [skip ci] ([09aecf2](https://github.com/tracking-exposed/trex/commit/09aecf2618de4def307ea05eaafd4b5e38e72eca))
+- upgrade github actions for gh release workflow [skip ci] ([9a32ade](https://github.com/tracking-exposed/trex/commit/9a32adeac173ef9525c277ee02b804d61d6b9214))
+
+- **deps:** bump vm2 from 3.9.11 to 3.9.17 ([633f3da](https://github.com/tracking-exposed/trex/commit/633f3dae91314ff69b5c1ce857683c052ceaa214))
+
 ## [2.8.4](https://github.com/tracking-exposed/trex/compare/v2.8.3...v2.8.4) (2023-01-20)
 
 - **deps:** bump decode-uri-component from 0.2.0 to 0.2.2 ([14f86a2](https://github.com/tracking-exposed/trex/commit/14f86a227bbe4bbbe323cb4ea3daec70145732be))
