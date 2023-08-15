@@ -1,3 +1,19 @@
+# Notice of discontinuation
+
+_August 2023_: Dear reader, as you may have read on the [Tracking Exposed](https://tracking.exposed) website, we're going through a complete restructuring/rebrainding/reframing. This repository, which hosts the TikTok and YouTube analytics toolkit, inherited code from 2016 and was becoming cumbersome to maintain. It has also undergone a major progressive refactoring from javascript to typescript over the last two years, as part of a more robust release pipeline that has served our algorithm accountability efforts.
+
+This code was originally forked from the repositories used to analyse Facebook ([extension](https://github.com/tracking-exposed/web-extension) and [backend](https://github.com/tracking-exposed/facebook)), and from there the AGPL-3 licence is inherited.
+
+Other sites that have a more accurate deprecation notice are
+* https://facebook.tracking.exposed
+* https://amazon.tracking.expoed
+* https://youtube.tracking.exposed
+* https://pornhub.tracking.exposed
+* https://tiktok.tracking.exposed
+* https://youchoose.ai
+
+---
+
 # Tracking Exposed toolkit
 
 ![](https://github.com/tracking-exposed/trex/actions/workflows/master_release.yml/badge.svg)
